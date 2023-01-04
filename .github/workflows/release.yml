@@ -19,8 +19,6 @@ jobs:
     permissions:
       contents: write
     timeout-minutes: 30
-    env:
-      OUTPUT=./nupkgs
     steps:
       - uses: actions/checkout@v3.1.0
 
@@ -40,6 +38,7 @@ jobs:
       - name: Package release
         id: package_release
         run: |
+          echo "OUTPUT=./nupkgs" >> $GITHUB_ENV
           VERSION=`cat semver.txt`
           echo "name=$VERSION" >> $GITHUB_ENV
           dotnet build --configuration Release
