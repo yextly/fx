@@ -1,0 +1,64 @@
+# This workflow is used for publishing the NuGet package.
+#
+# Before triggering a release the `semver.txt` file should be updated in the
+# relevant branch.
+#
+# When commiting the version change in `semver.txt` the commit message is
+# important as it will be used for the release in GitHub.
+#
+
+name: Release
+
+on:
+  workflow_dispatch
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 30
+    env:
+      OUTPUT=./nupkgs
+    steps:
+      - uses: actions/checkout@v3.1.0
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3.0.2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3.0.2
+        with:
+          dotnet-version: '7.0.x'
+
+      - name: Tests
+        run: dotnet test
+
+      - name: Package release
+        id: package_release
+        run: |
+          VERSION=`cat semver.txt`
+          echo "name=$VERSION" >> $GITHUB_ENV
+          dotnet build --configuration Release
+          dotnet pack --configuration Release /p:Version=$VERSION --output $OUTPUT
+
+      - name: Publish package
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          dotnet nuget push --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" *.nupkg
+
+      - name: Create github release
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_name: ${{ env.version }}
+          tag_name: v${{ env.version }}
+          draft: false
+          prerelease: false
+
