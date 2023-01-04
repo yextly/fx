@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Yextly.Xunit</RootNamespace>
+		<AssemblyName>Yextly.Xunit</AssemblyName>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<EnableNETAnalyzers>True</EnableNETAnalyzers>
+		<Description>XUnit utilities</Description>
+		<Authors>$(Company)</Authors>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="xunit" Version="2.4.1" />
+	</ItemGroup>
+</Project>
