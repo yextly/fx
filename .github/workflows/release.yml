@@ -38,7 +38,8 @@ jobs:
       - name: Package release
         id: package_release
         run: |
-          echo "OUTPUT=./nupkgs" >> $GITHUB_ENV
+          OUTPUT=./nupkgs
+          echo "OUTPUT=$OUTPUT" >> $GITHUB_ENV
           VERSION=`cat semver.txt`
           echo "name=$VERSION" >> $GITHUB_ENV
           dotnet build --configuration Release
