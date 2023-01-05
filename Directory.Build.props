@@ -33,4 +33,7 @@
 		<RepositoryUrl>https://github.com/yextly/fx.git</RepositoryUrl>
 		<!-- <PackageReadmeFile>Packages.md</PackageReadmeFile> -->
 	</PropertyGroup>
+	
+	<!-- This will be redefined after package restoration -->
+	<Target Name="GitVersion" />
 </Project>
