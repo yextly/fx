@@ -41,7 +41,7 @@ jobs:
           OUTPUT=./packages
           echo "OUTPUT=$OUTPUT" >> $GITHUB_ENV
           VERSION=`cat semver.txt`
-          echo "name=$VERSION" >> $GITHUB_ENV
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           dotnet build --configuration Release
           dotnet pack --configuration Release /p:Version=$VERSION --output $OUTPUT
 
@@ -57,8 +57,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: ${{ env.version }}
-          tag_name: v${{ env.version }}
+          release_name: ${{ env.VERSION }}
+          tag_name: v${{ env.VERSION }}
           draft: false
           prerelease: false
 
