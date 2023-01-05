@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTarget="SetVersion">
+	<Import Project="Shared\Versioning.targets" />
+</Project>
