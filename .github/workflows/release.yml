@@ -38,7 +38,7 @@ jobs:
       - name: Package release
         id: package_release
         run: |
-          OUTPUT=./nupkgs
+          OUTPUT=./packages
           echo "OUTPUT=$OUTPUT" >> $GITHUB_ENV
           VERSION=`cat semver.txt`
           echo "name=$VERSION" >> $GITHUB_ENV
@@ -49,7 +49,7 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
-          dotnet nuget push --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" *.nupkg
+          dotnet nuget push --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" $OUTPUT/*.nupkg
 
       - name: Create github release
         id: create_release
