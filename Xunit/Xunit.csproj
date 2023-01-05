@@ -7,7 +7,6 @@
 		<AssemblyName>Yextly.Xunit</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
 		<Description>XUnit utilities</Description>
 		<Authors>$(Company)</Authors>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
