@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Yextly.Tasks</RootNamespace>
+		<AssemblyName>Yextly.Tasks</AssemblyName>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Threading and task utilities</Description>
+		<Authors>$(Company)</Authors>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="GitInfo" Version="2.3.0" />
+	</ItemGroup>
+
+</Project>
