@@ -28,5 +28,9 @@
 		<PackageReference Include="GitInfo" Version="2.3.0" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
 
 </Project>
