@@ -16,7 +16,7 @@ namespace Yextly.Common
         /// Constructs a new <see cref="NonOwned{T}"/>
         /// </summary>
         /// <param name="value">The value to be wrapped.</param>
-        internal NonOwned(T value)
+        public NonOwned(T value)
         {
             Value = value;
         }
