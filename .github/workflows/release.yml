@@ -34,7 +34,7 @@ jobs:
       - name: Prepare release
         id: package_release
         run: |
-          OUTPUT=./packages
+          OUTPUT=/var/tmp/packages
           echo "OUTPUT=$OUTPUT" >> $GITHUB_ENV
           TAG=`git describe --tags --match v?*`
           VERSION="${TAG:1}"
