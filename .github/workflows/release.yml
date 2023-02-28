@@ -40,7 +40,7 @@ jobs:
           VERSION="${TAG:1}"
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           dotnet build --configuration Release
-          dotnet pack --configuration Release /p:Version=$VERSION /p:PackageOutputPath=$OUTPUT
+          dotnet pack --configuration Release /p:PackageOutputPath=$OUTPUT /p:Version=$VERSION
 
       - name: Publish packages
         env:
