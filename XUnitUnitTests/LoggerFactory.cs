@@ -11,11 +11,12 @@ using Yextly.Xunit.Testing;
 
 namespace XUnitUnitTests
 {
-    public sealed class Logging
+    public sealed class LoggerFactory
+
     {
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public Logging(ITestOutputHelper testOutputHelper)
+        public LoggerFactory(ITestOutputHelper testOutputHelper)
         {
             _testOutputHelper = testOutputHelper;
         }
@@ -28,7 +29,7 @@ namespace XUnitUnitTests
 
             using var factory = new XUnitLoggerFactory(_testOutputHelper);
 
-            var logger = factory.CreateLogger<Logging>();
+            var logger = factory.CreateLogger<LoggerFactory>();
 
             logger.LogInformation("Test");
         }
