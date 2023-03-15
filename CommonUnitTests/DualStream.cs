@@ -11,6 +11,7 @@ using Yextly.Common;
 
 namespace CommonUnitTests
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "This is for testing")]
     internal sealed class DualStream : Stream
     {
         private readonly NonOwned<Stream> _actual;
