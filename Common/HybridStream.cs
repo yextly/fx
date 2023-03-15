@@ -5,6 +5,7 @@
 // ==--==
 
 using System.Buffers;
+using System.Diagnostics;
 
 namespace Yextly.Common
 {
@@ -153,7 +154,7 @@ namespace Yextly.Common
             if (sourceOffset > endOffset)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
-            EnsureAvailablePagesFor(endOffset);
+            EnsureAvailablePagesFor(endOffset + 1);
 
             var sourcePageIndex = GetPageIndex(sourceOffset, out var firstPageStartOffset);
             var endPageIndex = GetPageIndex(endOffset, out var lastPageEndOffset);
@@ -161,22 +162,34 @@ namespace Yextly.Common
             var bufferOffset = offset;
             var totalBytesToCopy = count;
 
-            for (int i = sourcePageIndex; i < endPageIndex; i++)
+            int currentPageIndex = sourcePageIndex;
+            do
             {
-                var page = GetCoWPage(i);
+                var page = GetCoWPage(currentPageIndex);
 
-                var pageStartOffset = (i == sourcePageIndex) ? firstPageStartOffset : 0;
-                var pageEndOffset = (i + 1 == endPageIndex) ? lastPageEndOffset : _pageSize;
+                var pageStartOffset = (currentPageIndex == sourcePageIndex) ? firstPageStartOffset : 0;
+                var pageEndOffset = (currentPageIndex == endPageIndex) ? lastPageEndOffset + 1 : _pageSize;
 
-                var pageSize = pageEndOffset - lastPageEndOffset;
+                var pageSize = pageEndOffset - pageStartOffset;
+
+                Debug.Assert(pageSize >= 0);
 
                 var bytesToCopy = Math.Min(pageSize, totalBytesToCopy);
+                if (bytesToCopy == 0)
+                {
+                    currentPageIndex++;
+                }
+                else
+                {
+                    buffer.AsSpan(bufferOffset, bytesToCopy).CopyTo(page.AsSpan(pageStartOffset, pageSize));
+                    totalBytesToCopy -= bytesToCopy;
+                    bufferOffset += bytesToCopy;
+                    _currentPosition += bytesToCopy;
+                }
 
-                buffer.AsSpan(bufferOffset, bytesToCopy).CopyTo(page.AsSpan(pageStartOffset, pageEndOffset - pageStartOffset));
-                totalBytesToCopy -= bytesToCopy;
-                bufferOffset += bytesToCopy;
-                _currentPosition += bytesToCopy;
-            }
+                if (bytesToCopy == pageSize)
+                    currentPageIndex++;
+            } while (totalBytesToCopy > 0 && currentPageIndex <= endPageIndex);
 
             // moral equivalent of set length
             if (_currentPosition > _currentLength)
