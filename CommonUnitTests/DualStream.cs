@@ -7,6 +7,7 @@
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 using Yextly.Common;
 
 namespace CommonUnitTests
@@ -16,12 +17,17 @@ namespace CommonUnitTests
     {
         private readonly NonOwned<Stream> _actual;
         private readonly NonOwned<Stream> _expected;
+        private readonly ITestOutputHelper _testOutputHelper;
+        private int _readOperationId;
+        private int _writeOperationId;
 
-        public DualStream(Stream expected, Stream actual)
+        public DualStream(Stream expected, Stream actual, ITestOutputHelper testOutputHelper)
         {
             ArgumentNullException.ThrowIfNull(expected);
             ArgumentNullException.ThrowIfNull(actual);
+            ArgumentNullException.ThrowIfNull(testOutputHelper);
 
+            _testOutputHelper = testOutputHelper;
             _expected = expected.AsNonOwned();
             _actual = actual.AsNonOwned();
         }
@@ -129,7 +135,6 @@ namespace CommonUnitTests
                 if (expected < 0)
                     throw new NotSupportedException();
                 else
-
                     return expected;
             }
             set
@@ -190,9 +195,13 @@ namespace CommonUnitTests
             long expected;
             long actual;
 
+            _readOperationId++;
+            _testOutputHelper.WriteLine("Begin [" + _readOperationId + "] reading with size " + buffer.Length + " at local offset " + offset + " and count " + count);
+
             try
             {
                 actual = _actual.Value.Read(actualBuffer, offset, count);
+                _testOutputHelper.WriteLine("Read " + actual + " bytes: " + string.Join(", ", actualBuffer));
             }
             catch (Exception ex)
             {
@@ -209,6 +218,7 @@ namespace CommonUnitTests
                     newCount = count;
 
                 expected = _expected.Value.Read(expectedBuffer, offset, newCount);
+                _testOutputHelper.WriteLine("Read " + expected + " bytes: " + string.Join(", ", expectedBuffer));
             }
             catch (Exception ex)
             {
@@ -234,12 +244,19 @@ namespace CommonUnitTests
                 Assert.Equal(expected, actual);
             }
 
+            var expectedPosition = _expected.Value.Position;
+            var actualPosition = _actual.Value.Position;
+
+            Assert.Equal(expectedPosition, actualPosition);
+
             var min = (int)Math.Min(expected, actual);
 
             Assert.Equal(expectedBuffer.AsSpan(0, min).ToArray(), actualBuffer.AsSpan(offset, min).ToArray());
 
             var source = expected == min ? expectedBuffer : actualBuffer;
             source.AsSpan(0, (int)min).CopyTo(buffer.AsSpan());
+
+            _testOutputHelper.WriteLine("Done reading.");
 
             return min;
         }
@@ -350,6 +367,9 @@ namespace CommonUnitTests
             Exception? expectedException = null;
             Exception? actualException = null;
 
+            _writeOperationId++;
+            _testOutputHelper.WriteLine("Begin [" + _writeOperationId + "] writing with size " + buffer.Length + " at local offset " + offset + " and count " + count);
+            _testOutputHelper.WriteLine("Write " + count + " bytes starting from offset " + offset + ": " + string.Join(", ", buffer));
             try
             {
                 _expected.Value.Write(buffer, offset, count);
@@ -385,6 +405,8 @@ namespace CommonUnitTests
             var actualLength = _actual.Value.Length;
 
             Assert.Equal(expectedLength, actualLength);
+
+            _testOutputHelper.WriteLine("Write done.");
         }
 
         protected override void Dispose(bool disposing)
