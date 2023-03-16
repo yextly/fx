@@ -288,8 +288,12 @@ namespace CommonUnitTests
             Exception? expectedException = null;
             Exception? actualException = null;
 
+            long expectedInitialLength = -1;
+            long actualInitialLength = -1;
+
             try
             {
+                expectedInitialLength = _expected.Value.Length;
                 _expected.Value.SetLength(value);
             }
             catch (Exception ex)
@@ -299,6 +303,7 @@ namespace CommonUnitTests
 
             try
             {
+                actualInitialLength = _actual.Value.Length;
                 _actual.Value.SetLength(value);
             }
             catch (Exception ex)
@@ -317,6 +322,27 @@ namespace CommonUnitTests
             var actualLength = _actual.Value.Length;
 
             Assert.Equal(expectedLength, actualLength);
+
+            // the following part is to avoid non determinism on the new data
+            var count = expectedLength - expectedInitialLength;
+
+            var expectedOriginalPosition = _expected.Value.Position;
+            var actualOriginalPosition = _actual.Value.Position;
+
+            Assert.Equal(expectedOriginalPosition, actualOriginalPosition);
+
+            Position = expectedInitialLength;
+
+            var buffer = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
+            while (count > 0)
+            {
+                var c = Math.Min(buffer.Length, (int)count);
+                Write(buffer, 0, c);
+                count -= c;
+            }
+
+            Position = expectedOriginalPosition;
         }
 
         public override void Write(byte[] buffer, int offset, int count)
