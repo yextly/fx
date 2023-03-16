@@ -341,26 +341,28 @@ namespace CommonUnitTests
             Assert.Equal(expectedInitialLength, actualInitialLength);
             Assert.Equal(expectedLength, actualLength);
 
-            // the following part is to avoid non determinism on the new data
-            var count = expectedLength - expectedInitialLength;
-
             var expectedOriginalPosition = _expected.Value.Position;
             var actualOriginalPosition = _actual.Value.Position;
 
             Assert.Equal(expectedOriginalPosition, actualOriginalPosition);
 
-            Position = expectedInitialLength;
-
-            var buffer = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-
-            while (count > 0)
+            // the following part is to avoid non determinism on the new data
+            var count = expectedLength - expectedInitialLength;
+            if (count > 0)
             {
-                var c = Math.Min(buffer.Length, (int)count);
-                Write(buffer, 0, c);
-                count -= c;
-            }
+                Position = expectedInitialLength;
 
-            Position = expectedOriginalPosition;
+                var buffer = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
+                while (count > 0)
+                {
+                    var c = Math.Min(buffer.Length, (int)count);
+                    Write(buffer, 0, c);
+                    count -= c;
+                }
+
+                Position = expectedOriginalPosition;
+            }
         }
 
         public override void Write(byte[] buffer, int offset, int count)

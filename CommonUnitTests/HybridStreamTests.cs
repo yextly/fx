@@ -330,6 +330,65 @@ namespace CommonUnitTests
             _ = dual.Read(t.AsSpan());
         }
 
+        [InlineData(30, 6, 30, 3)]
+        [InlineData(30, 2, 27, 3)]
+        [InlineData(30, 1, 30, 2)]
+        [InlineData(30, 1, 30, 1)]
+        [InlineData(30, 1, 30, 3)]
+        [InlineData(63, 31, 64, 3)]
+        [InlineData(64, 32, 64, 4)]
+        [InlineData(64, 32, 64, 1)]
+        [InlineData(64, 32, 64, 3)]
+        [Theory]
+        public void CanTruncateAndExtendTheStream(int initialLength, int intermediateLength, int finalLength, int pageSize)
+        {
+            using var expected = CreateStream(initialLength, 0xcc, writable: true);
+            using var clone = CreateStream(initialLength, 0xcc);
+            using var actual = new HybridStream(clone, pageSize);
+
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
+
+            dual.SetLength(intermediateLength);
+            dual.SetLength(finalLength);
+
+            dual.Seek(0, SeekOrigin.Begin);
+
+            var t = new byte[finalLength];
+            _ = dual.Read(t.AsSpan());
+        }
+
+        [InlineData(26, 20, 3)]
+        [InlineData(26, 20, 4)]
+        [InlineData(23, 20, 5)]
+        [InlineData(26, 20, 5)]
+        [InlineData(25, 20, 5)]
+        [InlineData(63, 31, 1)]
+        [InlineData(63, 31, 2)]
+        [InlineData(63, 31, 3)]
+        [InlineData(63, 31, 4)]
+        [InlineData(63, 32, 2)]
+        [InlineData(63, 32, 3)]
+        [InlineData(63, 32, 4)]
+        [InlineData(64, 32, 4)]
+        [InlineData(64, 32, 1)]
+        [InlineData(64, 32, 3)]
+        [Theory]
+        public void CanTruncateTheStream(int initialLength, int finalLength, int pageSize)
+        {
+            using var expected = CreateStream(initialLength, 0xcc, writable: true);
+            using var clone = CreateStream(initialLength, 0xcc);
+            using var actual = new HybridStream(clone, pageSize);
+
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
+
+            dual.SetLength(finalLength);
+
+            dual.Seek(0, SeekOrigin.Begin);
+
+            var t = new byte[finalLength];
+            _ = dual.Read(t.AsSpan());
+        }
+
         private static Random CreateRandom() => new(0);
 
         private static Stream CreateStream(int length, byte seed = 0, bool writable = false)
