@@ -282,6 +282,46 @@ namespace CommonUnitTests
             }
         }
 
+        [InlineData(64, 1, 4)]
+        [InlineData(64, 1, 0)]
+        [InlineData(64, 1, 63)]
+        [InlineData(64, 1, 64)]
+        [InlineData(64, 3, 4)]
+        [InlineData(64, 3, 0)]
+        [InlineData(64, 3, 63)]
+        [InlineData(64, 3, 64)]
+        [InlineData(64, 2, 4)]
+        [InlineData(64, 2, 0)]
+        [InlineData(64, 2, 63)]
+        [InlineData(64, 2, 64)]
+        [InlineData(64, 4, 4)]
+        [InlineData(64, 4, 0)]
+        [InlineData(64, 4, 63)]
+        [InlineData(64, 4, 64)]
+        [InlineData(64, 8, 4)]
+        [InlineData(64, 8, 0)]
+        [InlineData(64, 8, 63)]
+        [InlineData(64, 8, 64)]
+        [InlineData(64, 64, 4)]
+        [InlineData(64, 64, 0)]
+        [InlineData(64, 64, 63)]
+        [InlineData(64, 64, 64)]
+        [Theory]
+        public void CanModifyASingleValue(int length, int pageSize, int offset)
+        {
+            using var expected = CreateStream(length, 0xcc, writable: true);
+            using var clone = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(clone, pageSize);
+
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
+
+            dual.Seek(offset, SeekOrigin.Begin);
+            dual.WriteByte(0xff);
+
+            var t = new byte[length];
+            _ = dual.Read(t.AsSpan());
+        }
+
         [InlineData(24, 24, 128, 60)]
         [InlineData(12, 24, 128, 60)]
         [InlineData(13, 24, 128, 60)]
