@@ -148,8 +148,8 @@ namespace Yextly.Common
         {
             ArgumentNullException.ThrowIfNull(buffer);
 
-            var sourceOffset = _currentPosition + offset;
-            var endOffset = _currentPosition + offset + count;
+            var sourceOffset = _currentPosition;
+            var endOffset = _currentPosition + count;
 
             if (sourceOffset > endOffset)
                 throw new ArgumentOutOfRangeException(nameof(count));
