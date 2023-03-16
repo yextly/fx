@@ -10,7 +10,7 @@ using System.Diagnostics;
 namespace Yextly.Common
 {
     /// <summary>
-    /// Represents a stream that performs writes in memory only.
+    /// Represents a stream that performs writes in memory only using copy-on-write buffers (pages).
     /// </summary>
     public sealed class HybridStream : Stream
     {
