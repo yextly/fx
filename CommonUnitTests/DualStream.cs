@@ -338,6 +338,7 @@ namespace CommonUnitTests
             var expectedLength = _expected.Value.Length;
             var actualLength = _actual.Value.Length;
 
+            Assert.Equal(expectedInitialLength, actualInitialLength);
             Assert.Equal(expectedLength, actualLength);
 
             // the following part is to avoid non determinism on the new data
