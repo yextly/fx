@@ -88,7 +88,7 @@ namespace Yextly.Common
                 throw new ArgumentOutOfRangeException(nameof(count));
 
             if (endOffset > _currentLength)
-                return 0;
+                endOffset = _currentLength;
 
             if (buffer.Length == 0 || sourceOffset == endOffset)
                 return 0;
