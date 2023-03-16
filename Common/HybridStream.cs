@@ -52,7 +52,7 @@ namespace Yextly.Common
             _pages = new List<byte[]?>();
             _currentPosition = _inner.Value.Position;
 
-            EnsureAvailablePagesFor(_currentLength);
+            EnsureAvailablePagesFor(_currentLength, false);
         }
 
         /// <inheritdoc/>
@@ -100,33 +100,49 @@ namespace Yextly.Common
             var copiedBytes = 0;
             var destinationLastOffset = offset + count;
 
-            for (int i = sourcePageIndex; i < endPageIndex; i++)
+            int currentPageIndex = sourcePageIndex;
+            do
             {
-                var page = GetPage(i);
-
-                var pageStartOffset = (i == sourcePageIndex) ? firstPageStartOffset : 0;
-                var pageEndOffset = (i + 1 == endPageIndex) ? lastPageEndOffset : _pageSize;
-
-                var pageSize = pageEndOffset - lastPageEndOffset;
-
-                var bytesToCopy = Math.Min(pageSize, destinationLastOffset - destinationOffset);
-
-                if (page == null)
+                if (TryGetPage(currentPageIndex, out var page))
                 {
-                    var read = _inner.Value.Read(buffer.AsSpan(destinationOffset, bytesToCopy));
-                    copiedBytes += read;
-                    destinationOffset += read;
-                    _currentPosition += read;
+                    var pageStartOffset = (currentPageIndex == sourcePageIndex) ? firstPageStartOffset : 0;
+                    var pageEndOffset = (currentPageIndex == endPageIndex) ? lastPageEndOffset : _pageSize;
+
+                    var pageSize = pageEndOffset - pageStartOffset;
+
+                    if (pageSize <= 0)
+                        break;
+
+                    var bytesToCopy = Math.Min(pageSize, destinationLastOffset - destinationOffset);
+
+                    if (page == null)
+                    {
+                        Debug.WriteLine("Read from " + _inner.Value.Position + " at worst " + bytesToCopy + " bytes");
+                        Debug.WriteLine("Source offset: " + sourceOffset);
+                        Debug.WriteLine("End offset: " + endOffset);
+
+                        if (pageStartOffset > 0)
+                            _inner.Value.Seek(pageStartOffset, SeekOrigin.Current);
+
+                        var read = _inner.Value.Read(buffer.AsSpan(destinationOffset, bytesToCopy));
+                        Debug.WriteLine("Read: " + read);
+
+                        copiedBytes += read;
+                        destinationOffset += read;
+                        _currentPosition += read;
+                    }
+                    else
+                    {
+                        var span = page.AsSpan(pageStartOffset, bytesToCopy);
+                        span.CopyTo(buffer.AsSpan(destinationOffset, destinationLastOffset - destinationOffset));
+                        copiedBytes += bytesToCopy;
+                        destinationOffset += bytesToCopy;
+                        _currentPosition += bytesToCopy;
+                    }
                 }
-                else
-                {
-                    var span = page.AsSpan(pageStartOffset, bytesToCopy);
-                    span.CopyTo(buffer.AsSpan(destinationOffset, destinationLastOffset - destinationOffset));
-                    copiedBytes += bytesToCopy;
-                    destinationOffset += bytesToCopy;
-                    _currentPosition += bytesToCopy;
-                }
-            }
+
+                currentPageIndex++;
+            } while (copiedBytes < count && currentPageIndex <= endPageIndex);
 
             return copiedBytes;
         }
@@ -140,7 +156,39 @@ namespace Yextly.Common
         /// <inheritdoc/>
         public override void SetLength(long value)
         {
-            throw new NotImplementedException();
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value));
+
+            if (value == _currentLength)
+            {
+                // nothing to do
+            }
+            else if (value > _currentLength)
+            {
+                // expansion
+                EnsureAvailablePagesFor(value, true);
+                _currentLength = value;
+            }
+            else
+            {
+                // this is a truncation. Note that truncating the stream has two important side effects:
+                // - cow pages are discarded when they exceed the original stream length (optional, at the moment not implemented)
+                // - new cow pages are allocated to cover the overlap between the new length and the original one in order to disallow reading the old "deleted" data
+
+                var firstPageIndex = GetPageIndex(value, out _);
+
+                // the first page must be fetched since it could contain partial valid data
+                _ = GetCoWPage(firstPageIndex);
+
+                for (int i = firstPageIndex + 1; i < _pages.Count; i++)
+                {
+                    var p = _pages[i];
+                    if (p == null)
+                        _pages[i] = AllocateNewDirtyPage();
+                }
+
+                _currentLength = value;
+            }
         }
 
         /// <inheritdoc/>
@@ -154,7 +202,7 @@ namespace Yextly.Common
             if (sourceOffset > endOffset)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
-            EnsureAvailablePagesFor(endOffset + 1);
+            EnsureAvailablePagesFor(endOffset, true);
 
             var sourcePageIndex = GetPageIndex(sourceOffset, out var firstPageStartOffset);
             var endPageIndex = GetPageIndex(endOffset, out var lastPageEndOffset);
@@ -196,6 +244,16 @@ namespace Yextly.Common
                 _currentLength = _currentPosition;
         }
 
+        internal void FetchAllFromStream()
+        {
+            EnsureAvailablePagesFor(_currentLength, true);
+
+            for (int i = 0; i < _pages.Count; i++)
+            {
+                _ = GetCoWPage(i);
+            }
+        }
+
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
@@ -206,14 +264,38 @@ namespace Yextly.Common
             foreach (var page in _pages)
             {
                 if (page != null)
-                    ArrayPool<byte>.Shared.Return(page);
+                    DeallocatePage(page);
             }
             _pages.Clear();
 
             base.Dispose(disposing);
         }
 
-        private void EnsureAvailablePagesFor(long size)
+        private static void DeallocatePage(byte[] page)
+        {
+            ArrayPool<byte>.Shared.Return(page);
+        }
+
+        [Conditional("DEBUG")]
+        private static void TagPage(byte[] page)
+        {
+            var array = new byte[] { 0xcc, 0xdd, 0xcd, 0xdc, 0xdd, 0xcc };
+            for (int i = 0; i < page.Length; i++)
+            {
+                page[i] = array[i % array.Length];
+            }
+        }
+
+        private byte[] AllocateNewDirtyPage()
+        {
+            var page = ArrayPool<byte>.Shared.Rent(_pageSize);
+
+            TagPage(page);
+
+            return page;
+        }
+
+        private void EnsureAvailablePagesFor(long size, bool fetchFromStream)
         {
             var pageCount = Math.DivRem(size, _pageSize, out var t);
 
@@ -225,7 +307,20 @@ namespace Yextly.Common
             if (c > 0)
             {
                 _pages.EnsureCapacity((int)count);
-                _pages.AddRange(Enumerable.Repeat((byte[]?)null, c));
+                if (fetchFromStream)
+                {
+                    for (int i = 0; i < c; i++)
+                    {
+                        var index = _pages.Count;
+                        _pages.Add(null);
+
+                        _ = GetCoWPage(index);
+                    }
+                }
+                else
+                {
+                    _pages.AddRange(Enumerable.Repeat((byte[]?)null, c));
+                }
             }
         }
 
@@ -234,13 +329,13 @@ namespace Yextly.Common
             var p = _pages[index];
             if (p == null)
             {
-                p = ArrayPool<byte>.Shared.Rent(_pageSize);
+                p = AllocateNewDirtyPage();
                 _pages[index] = p;
                 var offset = index * _pageSize;
-                if (offset < _currentLength)
+                if (offset < _originalLength)
                 {
                     _inner.Value.Seek(offset, SeekOrigin.Begin);
-                    var count = (int)Math.Min(offset + _pageSize, _currentLength) - offset;
+                    var count = (int)Math.Min(offset + _pageSize, _originalLength) - offset;
 
                     var initialOffset = 0;
                     while (count > 0)
@@ -264,6 +359,7 @@ namespace Yextly.Common
             if (p == null)
             {
                 var offset = index * _pageSize;
+                Debug.WriteLine("Move position to " + offset);
                 _inner.Value.Seek(offset, SeekOrigin.Begin);
             }
 
@@ -296,6 +392,20 @@ namespace Yextly.Common
 
             _currentPosition = newPosition;
             return _currentPosition;
+        }
+
+        private bool TryGetPage(int index, out Byte[]? page)
+        {
+            if (index < _pages.Count)
+            {
+                page = GetPage(index);
+                return true;
+            }
+            else
+            {
+                page = null;
+                return false;
+            }
         }
     }
 }
