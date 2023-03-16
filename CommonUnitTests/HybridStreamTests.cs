@@ -66,68 +66,201 @@ namespace CommonUnitTests
         [Theory]
         public void CanAppend(int length, int pageSize, int bufferSize, int maxLength, int ioSize)
         {
-            using var expected = CreateStream(length, 0xcc, writable: true);
-            using var clone = CreateStream(length, 0xcc);
-            using var actual = new HybridStream(clone, pageSize);
-
-            using var dual = new DualStream(expected, actual);
-
-            Assert.Equal(length, dual.Length);
-            Assert.Equal(0, dual.Position);
-
-            var random = HybridStreamTests.CreateRandom();
-
-            dual.Seek(0, SeekOrigin.End);
-
-            var count = maxLength - length;
-
-            var array = new byte[count];
-            random.NextBytes(array);
-
-            _testOutputHelper.WriteLine("Writing...");
-
-            int index = 0;
-            while (count > 0)
-            {
-                var c = (ioSize < 0) ? random.Next(count) + 1 : Math.Min(ioSize, count);
-                dual.Write(array, index, c);
-                index += c;
-                count -= c;
-            }
-
-            var buffer = new byte[bufferSize];
-
-            _testOutputHelper.WriteLine("Reading forward...");
-            for (int i = 0; i < maxLength; i++)
-            {
-                dual.Seek(0, SeekOrigin.Begin);
-
-                while (true)
-                {
-                    var r = dual.Read(buffer, 0, buffer.Length);
-                    if (r == 0)
-                        break;
-                }
-            }
-
-            _testOutputHelper.WriteLine("Reading backward...");
-            for (int i = length - 1; i >= 0; i--)
-            {
-                dual.Seek(0, SeekOrigin.End);
-
-                while (true)
-                {
-                    var r = dual.Read(buffer, 0, buffer.Length);
-                    if (r == 0)
-                        break;
-                }
-            }
+            CanAppendInternal(length, pageSize, bufferSize, maxLength, ioSize, false, false);
         }
 
+        [InlineData(128, 1, 1, 128, 1)]
+        [InlineData(128, 1, 1, 128, 2)]
+        [InlineData(128, 1, 1, 129, 1)]
+        [InlineData(128, 1, 1, 130, 1)]
+        [InlineData(128, 1, 1, 131, 1)]
+        [InlineData(128, 1, 1, 132, 1)]
+        [InlineData(128, 1, 1, 132, 2)]
+        [InlineData(128, 1, 1, 132, 3)]
+        [InlineData(128, 1, 1, 132, 4)]
+        [InlineData(128, 1, 1, 132, 5)]
+        [InlineData(128, 2, 3, 132, 2)]
+        [InlineData(128, 2, 3, 133, 2)]
+        [InlineData(128, 2, 3, 133, 3)]
+        [InlineData(128, 3, 4, 133, 5)]
+        [InlineData(117, 3, 2, 151, 4)]
+        [InlineData(117, 5, 4, 151, 4)]
+        [InlineData(117, 5, 4, 151, 5)]
+        [InlineData(117, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 152, 5)]
+        [InlineData(116, 5, 5, 152, 6)]
+        [InlineData(116, 6, 5, 152, 6)]
+        [InlineData(116, 6, 2, 152, 6)]
+        [InlineData(116, 6, 3, 152, 6)]
+        [InlineData(116, 6, 4, 152, 6)]
+        [InlineData(128, 3, 4, 129, 5)]
+        [InlineData(128, 3, 4, 131, 5)]
+        [InlineData(128, 3, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 4)]
+        [InlineData(128, 2, 3, 131, 3)]
+        [InlineData(128, 2, 3, 131, 2)]
+        [InlineData(128, 2, 3, 131, 1)]
+        [InlineData(128, 1, 3, 129, 3)]
+        [InlineData(128, 1, 4, 132, 2)]
+        [InlineData(128, 1, 4, 131, 2)]
+        [InlineData(128, 1, 4, 131, 4)]
+        [InlineData(128, 1, 4, 131, 3)]
+        [InlineData(128, 1, 3, 131, 3)]
+        [InlineData(128, 1, 2, 131, 3)]
+        [InlineData(128, 1, 1, 131, 3)]
+        [Theory]
+        public void CanAppendWithMarching(int length, int pageSize, int bufferSize, int maxLength, int ioSize)
+        {
+            CanAppendInternal(length, pageSize, bufferSize, maxLength, ioSize, false, true);
+        }
+
+        [InlineData(128, 1, 1, 128, 1)]
+        [InlineData(128, 1, 1, 128, 2)]
+        [InlineData(128, 1, 1, 129, 1)]
+        [InlineData(128, 1, 1, 130, 1)]
+        [InlineData(128, 1, 1, 131, 1)]
+        [InlineData(128, 1, 1, 132, 1)]
+        [InlineData(128, 1, 1, 132, 2)]
+        [InlineData(128, 1, 1, 132, 3)]
+        [InlineData(128, 1, 1, 132, 4)]
+        [InlineData(128, 1, 1, 132, 5)]
+        [InlineData(128, 2, 3, 132, 2)]
+        [InlineData(128, 2, 3, 133, 2)]
+        [InlineData(128, 2, 3, 133, 3)]
+        [InlineData(128, 3, 4, 133, 5)]
+        [InlineData(117, 3, 2, 151, 4)]
+        [InlineData(117, 5, 4, 151, 4)]
+        [InlineData(117, 5, 4, 151, 5)]
+        [InlineData(117, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 152, 5)]
+        [InlineData(116, 5, 5, 152, 6)]
+        [InlineData(116, 6, 5, 152, 6)]
+        [InlineData(116, 6, 2, 152, 6)]
+        [InlineData(116, 6, 3, 152, 6)]
+        [InlineData(116, 6, 4, 152, 6)]
+        [InlineData(128, 3, 4, 129, 5)]
+        [InlineData(128, 3, 4, 131, 5)]
+        [InlineData(128, 3, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 4)]
+        [InlineData(128, 2, 3, 131, 3)]
+        [InlineData(128, 2, 3, 131, 2)]
+        [InlineData(128, 2, 3, 131, 1)]
+        [InlineData(128, 1, 3, 129, 3)]
+        [InlineData(128, 1, 4, 132, 2)]
+        [InlineData(128, 1, 4, 131, 2)]
+        [InlineData(128, 1, 4, 131, 4)]
+        [InlineData(128, 1, 4, 131, 3)]
+        [InlineData(128, 1, 3, 131, 3)]
+        [InlineData(128, 1, 2, 131, 3)]
+        [InlineData(128, 1, 1, 131, 3)]
+        [Theory]
+        public void CanAppendWithStreamExpansion(int length, int pageSize, int bufferSize, int maxLength, int ioSize)
+        {
+            CanAppendInternal(length, pageSize, bufferSize, maxLength, ioSize, true, false);
+        }
+
+        [InlineData(128, 1, 1, 128, 1)]
+        [InlineData(128, 1, 1, 128, 2)]
+        [InlineData(128, 1, 1, 129, 1)]
+        [InlineData(128, 1, 1, 130, 1)]
+        [InlineData(128, 1, 1, 131, 1)]
+        [InlineData(128, 1, 1, 132, 1)]
+        [InlineData(128, 1, 1, 132, 2)]
+        [InlineData(128, 1, 1, 132, 3)]
+        [InlineData(128, 1, 1, 132, 4)]
+        [InlineData(128, 1, 1, 132, 5)]
+        [InlineData(128, 2, 3, 132, 2)]
+        [InlineData(128, 2, 3, 133, 2)]
+        [InlineData(128, 2, 3, 133, 3)]
+        [InlineData(128, 3, 4, 133, 5)]
+        [InlineData(117, 3, 2, 151, 4)]
+        [InlineData(117, 5, 4, 151, 4)]
+        [InlineData(117, 5, 4, 151, 5)]
+        [InlineData(117, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 151, 5)]
+        [InlineData(116, 5, 5, 152, 5)]
+        [InlineData(116, 5, 5, 152, 6)]
+        [InlineData(116, 6, 5, 152, 6)]
+        [InlineData(116, 6, 2, 152, 6)]
+        [InlineData(116, 6, 3, 152, 6)]
+        [InlineData(116, 6, 4, 152, 6)]
+        [InlineData(128, 3, 4, 129, 5)]
+        [InlineData(128, 3, 4, 131, 5)]
+        [InlineData(128, 3, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 5)]
+        [InlineData(128, 2, 3, 131, 4)]
+        [InlineData(128, 2, 3, 131, 3)]
+        [InlineData(128, 2, 3, 131, 2)]
+        [InlineData(128, 2, 3, 131, 1)]
+        [InlineData(128, 1, 3, 129, 3)]
+        [InlineData(128, 1, 4, 132, 2)]
+        [InlineData(128, 1, 4, 131, 2)]
+        [InlineData(128, 1, 4, 131, 4)]
+        [InlineData(128, 1, 4, 131, 3)]
+        [InlineData(128, 1, 3, 131, 3)]
+        [InlineData(128, 1, 2, 131, 3)]
+        [InlineData(128, 1, 1, 131, 3)]
+        [Theory]
+        public void CanAppendWithStreamExpansionAndMarching(int length, int pageSize, int bufferSize, int maxLength, int ioSize)
+        {
+            CanAppendInternal(length, pageSize, bufferSize, maxLength, ioSize, true, true);
+        }
+
+        [InlineData(8, 3, 5)]
+        [InlineData(14, 3, 5)]
         [InlineData(128, 3, 5)]
         [InlineData(128, 3, 2)]
         [InlineData(128, 1, 1)]
         [InlineData(128, 1, 8)]
+        [InlineData(128, 2, 8)]
+        [InlineData(128, 3, 8)]
+        [InlineData(128, 4, 8)]
+        [InlineData(128, 5, 8)]
+        [InlineData(128, 6, 8)]
+        [InlineData(128, 7, 8)]
+        [InlineData(128, 8, 8)]
+        [InlineData(128, 9, 8)]
+        [Theory]
+        public void CanEnumerateFromMemoryWithoutWriting(int length, int pageSize, int bufferSize)
+        {
+            using var expected = CreateStream(length, 0xcc);
+            using var clone = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(clone, pageSize);
+
+            actual.FetchAllFromStream();
+
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
+
+            Assert.Equal(length, dual.Length);
+            Assert.Equal(0, dual.Position);
+
+            var buffer = new byte[bufferSize];
+            while (true)
+            {
+                var r = dual.Read(buffer, 0, buffer.Length);
+                if (r == 0)
+                    break;
+            }
+        }
+
+        [InlineData(8, 3, 5)]
+        [InlineData(14, 3, 5)]
+        [InlineData(128, 3, 5)]
+        [InlineData(128, 3, 2)]
+        [InlineData(128, 1, 1)]
+        [InlineData(128, 1, 8)]
+        [InlineData(128, 2, 8)]
+        [InlineData(128, 3, 8)]
+        [InlineData(128, 4, 8)]
+        [InlineData(128, 5, 8)]
+        [InlineData(128, 6, 8)]
+        [InlineData(128, 7, 8)]
+        [InlineData(128, 8, 8)]
+        [InlineData(128, 9, 8)]
         [Theory]
         public void CanEnumerateWithoutWriting(int length, int pageSize, int bufferSize)
         {
@@ -135,7 +268,7 @@ namespace CommonUnitTests
             using var clone = CreateStream(length, 0xcc);
             using var actual = new HybridStream(clone, pageSize);
 
-            using var dual = new DualStream(expected, actual);
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
 
             Assert.Equal(length, dual.Length);
             Assert.Equal(0, dual.Position);
@@ -173,6 +306,80 @@ namespace CommonUnitTests
             else
             {
                 return new MemoryStream(buffer, false);
+            }
+        }
+
+        private void CanAppendInternal(int length, int pageSize, int bufferSize, int maxLength, int ioSize, bool setInitialLength, bool march)
+        {
+            using var expected = CreateStream(length, 0xcc, writable: true);
+            using var clone = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(clone, pageSize);
+
+            using var dual = new DualStream(expected, actual, _testOutputHelper);
+
+            Assert.Equal(length, dual.Length);
+            Assert.Equal(0, dual.Position);
+
+            var random = HybridStreamTests.CreateRandom();
+
+            if (setInitialLength)
+                dual.SetLength(maxLength);
+
+            dual.Seek(0, SeekOrigin.End);
+
+            var count = maxLength - length;
+
+            var array = new byte[count];
+            random.NextBytes(array);
+
+            var buffer = new byte[bufferSize];
+
+            _testOutputHelper.WriteLine("Writing...");
+
+            int index = 0;
+            while (count > 0)
+            {
+                var c = (ioSize < 0) ? random.Next(count) + 1 : Math.Min(ioSize, count);
+                dual.Write(array, index, c);
+                index += c;
+                count -= c;
+
+                if (march)
+                {
+                    _testOutputHelper.WriteLine("Marching back...");
+                    dual.Seek(0, SeekOrigin.Begin);
+
+                    var t = new byte[maxLength];
+                    _ = dual.Read(t.AsSpan());
+
+                    dual.Seek(0, SeekOrigin.End);
+                }
+            }
+
+            _testOutputHelper.WriteLine("Reading forward...");
+            for (int i = 0; i < maxLength; i++)
+            {
+                dual.Seek(0, SeekOrigin.Begin);
+
+                while (true)
+                {
+                    var r = dual.Read(buffer, 0, buffer.Length);
+                    if (r == 0)
+                        break;
+                }
+            }
+
+            _testOutputHelper.WriteLine("Reading backward...");
+            for (int i = length - 1; i >= 0; i--)
+            {
+                dual.Seek(0, SeekOrigin.End);
+
+                while (true)
+                {
+                    var r = dual.Read(buffer, 0, buffer.Length);
+                    if (r == 0)
+                        break;
+                }
             }
         }
     }
