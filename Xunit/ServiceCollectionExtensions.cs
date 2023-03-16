@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static partial class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds support for logging to XUnit..
+        /// Adds support for logging to XUnit.
         /// </summary>
         /// <param name="services">The service collection to use.</param>
         /// <param name="testOutputHelper">The destination of all the logs.</param>
@@ -25,8 +25,27 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <exception cref="ArgumentNullException">Arguments are null or empty.</exception>
         public static IServiceCollection AddXUnitLogging(this IServiceCollection services, ITestOutputHelper testOutputHelper)
         {
+            return AddXUnitLogging(services, testOutputHelper, true);
+        }
+
+        /// <summary>
+        /// Adds support for logging to XUnit.
+        /// </summary>
+        /// <param name="services">The service collection to use.</param>
+        /// <param name="testOutputHelper">The destination of all the logs.</param>
+        /// <param name="forceRegistration">Wipes existing providers anda factories before injecting the new services.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException">Arguments are null or empty.</exception>
+        public static IServiceCollection AddXUnitLogging(this IServiceCollection services, ITestOutputHelper testOutputHelper, bool forceRegistration)
+        {
             ArgumentNullException.ThrowIfNull(services);
             ArgumentNullException.ThrowIfNull(testOutputHelper);
+
+            if (forceRegistration)
+            {
+                services.RemoveAll<ILoggerFactory>();
+                services.RemoveAll(typeof(ILogger<>));
+            }
 
             services.TryAddSingleton<ITestOutputHelper>(testOutputHelper);
 
