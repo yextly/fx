@@ -370,6 +370,40 @@ namespace CommonUnitTests
             _ = dual.Read(t.AsSpan());
         }
 
+        [Fact]
+        public void CanReadWithZeroBuffer()
+        {
+            const int length = 61_046_536;
+            const int pageSize = 16_384;
+            const int newLength = 3_726 * pageSize;
+
+            using var inner = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(inner, pageSize);
+
+            actual.SetLength(newLength);
+            actual.Seek(0, SeekOrigin.Begin);
+            var read = actual.Read(Array.Empty<byte>(), 0, 0);
+
+            Assert.Equal(0, read);
+        }
+
+        [Fact]
+        public void CanReadWithZeroCount()
+        {
+            const int length = 61_046_536;
+            const int pageSize = 16_384;
+            const int newLength = 3_726 * pageSize;
+
+            using var inner = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(inner, pageSize);
+
+            actual.SetLength(newLength);
+            actual.Seek(0, SeekOrigin.Begin);
+            var read = actual.Read(new byte[16], 0, 0);
+
+            Assert.Equal(0, read);
+        }
+
         [InlineData(30, 6, 30, 3)]
         [InlineData(30, 2, 27, 3)]
         [InlineData(30, 1, 30, 2)]
@@ -427,6 +461,42 @@ namespace CommonUnitTests
 
             var t = new byte[finalLength];
             _ = dual.Read(t.AsSpan());
+        }
+
+        [Fact]
+        public void CanWriteAtTheBoundaries()
+        {
+            const int length = 61_046_536;
+            const int pageSize = 16_384;
+            const int newLength = (3_726 * pageSize) - 1;
+
+            const int expectedLength = newLength + 1;
+
+            using var inner = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(inner, pageSize);
+
+            actual.SetLength(newLength);
+            actual.Seek(0, SeekOrigin.End);
+            actual.Write(new byte[] { 0x77 }, 0, 1);
+
+            Assert.Equal(expectedLength, actual.Length);
+        }
+
+        [Fact]
+        public void CanWriteAtTheBoundariesWithZeroCount()
+        {
+            const int length = 61_046_536;
+            const int pageSize = 16_384;
+            const int newLength = 3_726 * pageSize;
+
+            using var inner = CreateStream(length, 0xcc);
+            using var actual = new HybridStream(inner, pageSize);
+
+            actual.SetLength(newLength);
+            actual.Seek(0, SeekOrigin.End);
+            actual.Write(Array.Empty<byte>(), 0, 0);
+
+            Assert.Equal(newLength, actual.Length);
         }
 
         private static Random CreateRandom() => new(0);

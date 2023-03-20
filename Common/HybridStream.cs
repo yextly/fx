@@ -202,6 +202,9 @@ namespace Yextly.Common
             if (sourceOffset > endOffset)
                 throw new ArgumentOutOfRangeException(nameof(count));
 
+            if (count == 0)
+                return;
+
             EnsureAvailablePagesFor(endOffset, true);
 
             var sourcePageIndex = GetPageIndex(sourceOffset, out var firstPageStartOffset);
