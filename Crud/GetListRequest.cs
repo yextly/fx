@@ -9,7 +9,7 @@ using System.Text.Json.Serialization;
 namespace Yextly.ServiceFabric.Mvc.Crud
 {
     /// <summary>
-    /// Represents a <see cref="RestResourceControllerBase{TInnerEntity, TOuterEntity}.GetList(GetListRequest)"/> request.
+    /// Represents a <see cref="CrudResourceControllerBase{TInnerEntity, TOuterEntity}.GetList(GetListRequest)"/> request.
     /// </summary>
     public sealed class GetListRequest
     {
