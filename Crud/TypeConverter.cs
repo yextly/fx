@@ -24,13 +24,21 @@ namespace Yextly.ServiceFabric.Mvc.Crud
                 else
                     return Enum.ToObject(newType, value);
             }
+            else if (newType == typeof(DateTime) && value is string dt)
+            {
+                return DateTime.Parse(dt, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            }
+            else if (newType == typeof(DateTime?) && value is string ndt)
+            {
+                return DateTime.Parse(ndt, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            }
             else if (newType == typeof(DateTimeOffset) && value is string dtos)
             {
-                return DateTimeOffset.Parse(dtos, CultureInfo.InvariantCulture);
+                return DateTimeOffset.Parse(dtos, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
             }
             else if (newType == typeof(DateTimeOffset?) && value is string ndtos)
             {
-                return DateTimeOffset.Parse(ndtos, CultureInfo.InvariantCulture);
+                return DateTimeOffset.Parse(ndtos, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
             }
             else if (newType == typeof(Guid) && value is string gs)
             {
