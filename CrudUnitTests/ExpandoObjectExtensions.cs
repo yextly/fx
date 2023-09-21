@@ -17,10 +17,7 @@ namespace CrudUnitTests
         public static void AddProperty<T, Q>(this ExpandoObject instance, Expression<Func<T, Q>> expression, Q value)
         {
             var dictionary = (IDictionary<string, object?>)instance;
-            var property = GetPropertyInfo2(expression);
-            if (property == null)
-                throw new InvalidOperationException("Cannot find the property.");
-
+            var property = GetPropertyInfo2(expression) ?? throw new InvalidOperationException("Cannot find the property.");
             dictionary.Add(property.Name, value);
         }
 
