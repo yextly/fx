@@ -26,4 +26,7 @@
 		<ProjectReference Include="..\Globalization\Globalization.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
 </Project>
