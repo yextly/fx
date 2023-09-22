@@ -57,7 +57,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
                 var descriptor = item.First().Descriptor;
 
                 var id = item.Key.ToString();
-                var name = descriptor.AttributeRouteInfo.Name ?? ToCamelCase(descriptor.ControllerName);
+                var name = descriptor.AttributeRouteInfo?.Name ?? ToCamelCase(descriptor.ControllerName);
                 var description = resource.Description;
 
                 var r = new CrudResourceDescriptor(id, name, description)
