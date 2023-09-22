@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 namespace Yextly.ServiceFabric.Mvc.Crud
 {
     /// <summary>
-    /// Represents a <see cref="RestResourceControllerBase{TInnerEntity, TOuterEntity}.GetMultiple(GetMultipleEntitiesRequest)"/> request.
+    /// Represents a <see cref="CrudResourceControllerBase{TInnerEntity, TOuterEntity}.GetMultiple(GetMultipleEntitiesRequest)"/> request.
     /// </summary>
     public sealed class GetMultipleEntitiesRequest
     {
