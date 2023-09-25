@@ -15,6 +15,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// Ascending order (default).
         /// </summary>
         Ascending = 0,
+
         /// <summary>
         /// Descending.
         /// </summary>
