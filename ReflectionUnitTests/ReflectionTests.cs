@@ -38,6 +38,17 @@ namespace ReflectionUnitTests
             Assert.Equal(expected, actual);
         }
 
+        [InlineData(typeof(IReadOnlyDictionary<int, long?>), typeof(IReadOnlyDictionary<,>), typeof(int), typeof(long?))]
+        [InlineData(typeof(Dictionary<int, long?>), typeof(IReadOnlyDictionary<,>), typeof(int), typeof(long?))]
+        [Theory]
+        public void CanExtractInterfaceOfTArray(Type input, Type definition, params Type[] expected)
+        {
+            var success = input.ImplementsGenericInterfaceOfTWithArray(definition, out var actual);
+
+            Assert.True(success);
+            Assert.Equal(expected, actual);
+        }
+
         [InlineData(typeof(Task<int>), typeof(int))]
         [InlineData(typeof(Task<int?>), typeof(int?))]
         [InlineData(typeof(Task<Stream>), typeof(Stream))]
