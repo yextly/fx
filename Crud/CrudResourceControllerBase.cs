@@ -29,7 +29,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [UseRoleProvider(typeof(CrudResourceRoleProvider))]
-    public abstract class CrudResourceControllerBase<TInnerEntity, TOuterEntity> : ControllerBase where TInnerEntity : class, new() where TOuterEntity : class, new()
+    public abstract class CrudResourceControllerBase<TInnerEntity, TOuterEntity> : ControllerBase where TInnerEntity : class where TOuterEntity : class
     {
         private const string OperationNotAllowedMessage = "The operation is not supported";
 
@@ -382,12 +382,9 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         protected virtual Task<(TInnerEntity? Entity, string? Message)> CreateEntityInternal(CreateEntityRequest request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
-            var entity = new TInnerEntity();
+            var entity = _adapter.ConstructEntity() ?? throw new InvalidOperationException("Entity constructor returned null.");
 
             if (request.Data != null)
             {
@@ -432,10 +429,8 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <exception cref="InvalidOperationException">Incorrect data or adapter errors.</exception>
         protected virtual async Task<TInnerEntity> DeleteEntityInternal(DeleteEntityRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
+
             // the contract here is that we return the deleted item, therefore we must fetch it first.
             // at the moment we do not check previous data. we probably ought to prevent concurreny issues, but this will be in the future
 
@@ -443,7 +438,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
             if (t.Data.Count == 0)
             {
-                return new TInnerEntity();
+                return _adapter.ConstructEntity() ?? throw new InvalidOperationException("Entity constructor returned null.");
             }
             else if (t.Data.Count > 1)
             {

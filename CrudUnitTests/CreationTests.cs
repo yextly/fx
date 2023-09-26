@@ -43,6 +43,9 @@ namespace CrudUnitTests
 
                     return x;
                 });
+            adapter
+                .Setup(x => x.ConstructEntity())
+                .Returns(new Data1());
 
             var controller = new Data1Controller(logger, adapter.Object, source);
             var request = new CreateEntityRequest

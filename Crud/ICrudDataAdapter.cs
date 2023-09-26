@@ -33,6 +33,13 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         ProviderType ProviderType { get; }
 
         /// <summary>
+        /// Cronstructs an entity.
+        /// </summary>
+        /// <remarks>This method is the functional equivalent to a public parameterless constructor. The instance must be created in a way that is not attached to any context.</remarks>
+        /// <returns>A newly constructed entity.</returns>
+        TEntity ConstructEntity();
+
+        /// <summary>
         /// Creates a new entity.
         /// </summary>
         /// <param name="entity">The entity to create.</param>
