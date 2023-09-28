@@ -18,7 +18,7 @@ namespace CrudUnitTests
 
         private sealed class ControllerLogger : ILogger<Data1Controller>, IDisposable
         {
-            public IDisposable BeginScope<TState>(TState state)
+            public IDisposable? BeginScope<TState>(TState state) where TState : notnull
             {
                 return this;
             }
