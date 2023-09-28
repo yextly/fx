@@ -110,10 +110,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> DeleteEntity([FromBody] DeleteEntityRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             try
             {
@@ -151,10 +148,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> DeleteManyEntities([FromBody] DeleteMultipleEntitiesRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             try
             {
@@ -197,10 +191,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> GetList([FromBody] GetListRequest request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             try
             {
@@ -230,10 +221,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> GetMultiple([FromBody] GetMultipleEntitiesRequest request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             try
             {
@@ -337,10 +325,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> UpdateEntity([FromBody] UpdateSingleEntityRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             try
             {
@@ -473,10 +458,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <exception cref="InvalidOperationException"></exception>
         protected virtual Task<CrudCollectionResult<TInnerEntity>> GetListInternal(GetListRequest request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             var source = _adapter.PrepareForReading(_entities);
 
@@ -670,10 +652,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <returns></returns>
         protected virtual async Task<TInnerEntity?> UpdateEntityInternal(UpdateSingleEntityRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             var source = _adapter.PrepareForWriting(_entities);
             var s = Expression.Parameter(typeof(TInnerEntity));

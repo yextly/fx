@@ -53,7 +53,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         public static PropertyInfo GetPropertyByName<T>(string name)
         {
-            return typeof(T).GetProperty(name, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase) ?? throw new InvalidOperationException($@"The property ""{name}"" is not found.");
+            return typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase) ?? throw new InvalidOperationException($@"The property ""{name}"" is not found.");
         }
 
         public static MethodInfo GetEFLikeMethod()
