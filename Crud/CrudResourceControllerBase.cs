@@ -29,7 +29,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
     [ApiController]
     [Produces(MediaTypeNames.Application.Json)]
     [UseRoleProvider(typeof(CrudResourceRoleProvider))]
-    public abstract class CrudResourceControllerBase<TInnerEntity, TOuterEntity> : ControllerBase where TInnerEntity : class where TOuterEntity : class
+    public abstract partial class CrudResourceControllerBase<TInnerEntity, TOuterEntity> : ControllerBase where TInnerEntity : class where TOuterEntity : class
     {
         private const string OperationNotAllowedMessage = "The operation is not supported";
 
@@ -61,7 +61,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Create)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> CreateEntity([FromBody] CreateEntityRequest request)
         {
             try
@@ -90,7 +89,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to create the entity: {Message}", ex.Message);
+                LogCannotCreateEntity(ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -107,7 +106,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Delete)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> DeleteEntity([FromBody] DeleteEntityRequest<TInnerEntity> request)
         {
             ArgumentNullException.ThrowIfNull(request);
@@ -128,7 +126,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to delete the entity {Id}: {Message}", request.Id, ex.Message);
+                LogFailedToDeleteTheEntity(request.Id, ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -825,6 +823,12 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             else
                 return source.FirstOrDefault(predicate);
         }
+
+        [LoggerMessage(Message = "Failed to create the entity: {Message}", Level = LogLevel.Warning, EventId = 1)]
+        private partial void LogCannotCreateEntity(string message, Exception exception);
+
+        [LoggerMessage(Message = "Failed to delete the entity {Id}: {Message}", Level = LogLevel.Warning, EventId = 2)]
+        private partial void LogFailedToDeleteTheEntity(string id, string message, Exception exception);
 
         //private MethodInfo GetGenericComparer()
         //{
