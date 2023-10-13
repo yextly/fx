@@ -486,8 +486,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
                         }
                         else
                         {
-                            var comparison = Expression.Constant(StringComparison.OrdinalIgnoreCase, typeof(StringComparison));
-                            operation = Expression.Call(p, ReflectionHelpers.GetSystemStringCompareMethod(), value, comparison);
+                            operation = Expression.Call(ReflectionHelpers.GetSearchHelperLikeMethod(), p, value);
                         }
                     }
                     else

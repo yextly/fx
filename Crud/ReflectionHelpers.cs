@@ -12,11 +12,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 {
     internal static class ReflectionHelpers
     {
-        public static bool EqualsInternal<T>(T left, T right) where T : struct, IEquatable<T>
-        {
-            return left.Equals((T)right);
-        }
-
         public static bool CanBeAssignedToRawGeneric(Type sourceType, Type destinationType)
         {
             while (sourceType != null && sourceType != typeof(object))
@@ -34,6 +29,31 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             return false;
         }
 
+        public static bool EqualsInternal<T>(T left, T right) where T : struct, IEquatable<T>
+        {
+            return left.Equals((T)right);
+        }
+
+        public static MethodInfo GetEFLikeMethod()
+        {
+            return typeof(DbFunctionsExtensions).GetMethod(nameof(DbFunctionsExtensions.Like), BindingFlags.Public | BindingFlags.Static, new Type[] { typeof(DbFunctions), typeof(string), typeof(string) }) ?? throw new InvalidOperationException("Cannot find EF.Functions.Like.");
+        }
+
+        public static PropertyInfo GetPropertyByName<T>(string name)
+        {
+            return typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase) ?? throw new InvalidOperationException($@"The property ""{name}"" is not found.");
+        }
+
+        public static MethodInfo GetSearchHelperLikeMethod()
+        {
+            return typeof(SearchHelpers).GetMethod(nameof(SearchHelpers.Like), BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic, new Type[] { typeof(string), typeof(string) }) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
+        }
+
+        public static MethodInfo GetSystemStringCompareMethod()
+        {
+            return typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string), typeof(StringComparison) }) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
+        }
+
         public static bool TryGetDbContextType(Type type, [MaybeNullWhen(false)] out Type innerType)
         {
             if (type == null)
@@ -49,21 +69,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
                 innerType = default!;
                 return false;
             }
-        }
-
-        public static PropertyInfo GetPropertyByName<T>(string name)
-        {
-            return typeof(T).GetProperty(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase) ?? throw new InvalidOperationException($@"The property ""{name}"" is not found.");
-        }
-
-        public static MethodInfo GetEFLikeMethod()
-        {
-            return typeof(DbFunctionsExtensions).GetMethod(nameof(DbFunctionsExtensions.Like), BindingFlags.Public | BindingFlags.Static, new Type[] { typeof(DbFunctions), typeof(string), typeof(string) }) ?? throw new InvalidOperationException("Cannot find EF.Functions.Like.");
-        }
-
-        public static MethodInfo GetSystemStringCompareMethod()
-        {
-            return typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string), typeof(StringComparison) }) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
         }
     }
 }
