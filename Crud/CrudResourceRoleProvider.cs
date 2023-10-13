@@ -22,10 +22,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <inheritdoc/>
         public (bool AttributeFound, string? Role) GetRouteRole(ActionDescriptor actionDescriptor)
         {
-            if (actionDescriptor is null)
-            {
-                throw new ArgumentNullException(nameof(actionDescriptor));
-            }
+            ArgumentNullException.ThrowIfNull(actionDescriptor);
 
             var rbac = (RoleBasedAuthorizationAttribute?)actionDescriptor.EndpointMetadata.FirstOrDefault(x => x is RoleBasedAuthorizationAttribute);
             var rop = (CrudOperationTypeAttribute?)actionDescriptor.EndpointMetadata.FirstOrDefault(x => x is CrudOperationTypeAttribute);
