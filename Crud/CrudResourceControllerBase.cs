@@ -186,7 +186,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Read)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> GetList([FromBody] GetListRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
@@ -199,7 +198,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to get entities: {Message}", ex.Message);
+                LogFailedToGetTheEntities(ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -216,7 +215,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Read)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> GetMultiple([FromBody] GetMultipleEntitiesRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
@@ -229,7 +227,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to get the entities: {Message}", ex.Message);
+                LogFailedToGetTheEntities(ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -246,7 +244,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Read)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> GetSingle(string id)
         {
             try
@@ -267,7 +264,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to get the entity {Id}: {Message}", id, ex.Message);
+                LogFailedToGetTheEntity(id, ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -284,7 +281,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Update)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> UpdateEntities([FromBody] UpdateMultipleEntitiesRequest<TInnerEntity> request)
         {
             try
@@ -303,7 +299,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to update the entities: {Message}", ex.Message);
+                LogFailedToUpdateTheEntities(ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -320,7 +316,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [ProducesResponseType(typeof(ErrorResponse), (int)HttpStatusCode.BadRequest)]
         [CrudOperationType(OperationType.Update)]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is logged")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         public async Task<IActionResult> UpdateEntity([FromBody] UpdateSingleEntityRequest<TInnerEntity> request)
         {
             ArgumentNullException.ThrowIfNull(request);
@@ -351,7 +346,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to update the entity {Id}: {Message}", request.Id, ex.Message);
+                LogFailedToUpdateTheEntity(request.Id, ex.Message, ex);
 
                 return BadRequest(GenerateErrorDto(ex));
             }
@@ -362,7 +357,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// </summary>
         /// <returns></returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "The exception is captured and returned")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "This is not an issue")]
         protected virtual Task<(TInnerEntity? Entity, string? Message)> CreateEntityInternal(CreateEntityRequest request)
         {
             ArgumentNullException.ThrowIfNull(request);
@@ -396,7 +390,8 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Cannot create a new entity.");
+                LogCannotCreateNewEntity(ex.Message, ex);
+
                 message = ex.Message;
                 e = null;
             }
@@ -826,8 +821,23 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [LoggerMessage(Message = "Failed to create the entity: {Message}", Level = LogLevel.Warning, EventId = 1)]
         private partial void LogCannotCreateEntity(string message, Exception exception);
 
+        [LoggerMessage(Message = "Failed to create a new entity: {Message}", Level = LogLevel.Warning, EventId = 7)]
+        private partial void LogCannotCreateNewEntity(string message, Exception exception);
+
         [LoggerMessage(Message = "Failed to delete the entity {Id}: {Message}", Level = LogLevel.Warning, EventId = 2)]
         private partial void LogFailedToDeleteTheEntity(string id, string message, Exception exception);
+
+        [LoggerMessage(Message = "Failed to get the entities: {Message}", Level = LogLevel.Warning, EventId = 3)]
+        private partial void LogFailedToGetTheEntities(string message, Exception exception);
+
+        [LoggerMessage(Message = "Failed to get the entity {Id}: {Message}", Level = LogLevel.Warning, EventId = 4)]
+        private partial void LogFailedToGetTheEntity(string id, string message, Exception exception);
+
+        [LoggerMessage(Message = "Failed to update the entities: {Message}", Level = LogLevel.Warning, EventId = 6)]
+        private partial void LogFailedToUpdateTheEntities(string message, Exception exception);
+
+        [LoggerMessage(Message = "Failed to update the entity {Id}: {Message}", Level = LogLevel.Warning, EventId = 5)]
+        private partial void LogFailedToUpdateTheEntity(string id, string message, Exception exception);
 
         //private MethodInfo GetGenericComparer()
         //{
