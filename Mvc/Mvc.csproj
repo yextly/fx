@@ -3,29 +3,29 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<RootNamespace>Yextly.Xunit</RootNamespace>
-		<AssemblyName>Yextly.Xunit</AssemblyName>
+		<RootNamespace>Yextly.ServiceFabric.Mvc</RootNamespace>
+		<AssemblyName>Yextly.ServiceFabric.Mvc</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>XUnit utilities</Description>
+		<Description>Mvc utilities</Description>
 		<Authors>$(Company)</Authors>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" /> 
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="GitInfo" Version="3.3.3">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3" />
-		<PackageReference Include="xunit" Version="2.5.1" />
-		<PackageReference Include="xunit.abstractions" Version="2.0.3" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-	</ItemGroup>
 </Project>
