@@ -30,7 +30,7 @@ namespace System
         /// <param name="source">The string to convert.</param>
         /// <returns></returns>
         [return: NotNullIfNotNull(nameof(source))]
-        public static string? ToKebab(this string source)
+        public static string? ToKebab(this string? source)
         {
             if (source == null)
                 return null;
