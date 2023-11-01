@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+		<PackageReference Include="Moq" Version="4.20.69" />
 		<PackageReference Include="xunit" Version="2.6.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -18,13 +19,6 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Xunit\Xunit.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="GitInfo" Version="3.3.3">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -35,5 +29,10 @@
 		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\ScriptingAbstractions\ScriptingAbstractions.csproj" />
+	  <ProjectReference Include="..\ScriptingServices\ScriptingServices.csproj" />
+	  <ProjectReference Include="..\ScriptingTestingAssembly1\ScriptingTestingAssembly1.csproj" />
+	</ItemGroup>
 
 </Project>

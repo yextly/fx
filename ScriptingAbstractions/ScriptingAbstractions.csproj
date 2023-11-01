@@ -3,11 +3,11 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<RootNamespace>Yextly.ServiceFabric.Mvc.Crud</RootNamespace>
-		<AssemblyName>Yextly.ServiceFabric.Mvc.Crud</AssemblyName>
+		<RootNamespace>Yextly.Scripting.Abstractions</RootNamespace>
+		<AssemblyName>Yextly.Scripting.Abstractions</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>CRUD library for ASP.Net Core</Description>
+		<Description>Scripting engine abstractions</Description>
 		<Authors>$(Company)</Authors>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IsPackable>true</IsPackable>
@@ -22,11 +22,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.13" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <ProjectReference Include="..\Mvc\Mvc.csproj" />
-	  <ProjectReference Include="..\WellKnownIdentifiers\WellKnownIdentifiers.csproj" />
-	</ItemGroup>
 </Project>
