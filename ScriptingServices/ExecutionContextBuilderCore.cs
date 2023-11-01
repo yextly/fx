@@ -29,7 +29,15 @@ namespace Yextly.Scripting.Services
                     Usings.Add(item.Namespace);
             }
 
-            return new ExecutionContext(References.Distinct().ToImmutableArray(), Usings.Distinct().ToImmutableArray(), HostInstance, HostInstanceType);
+            var references = References
+                .Distinct()
+                .ToImmutableArray();
+
+            var usings = Usings
+                .Distinct(StringComparer.Ordinal)
+                .ToImmutableArray();
+
+            return new ExecutionContext(references, usings, HostInstance, HostInstanceType);
         }
     }
 }
