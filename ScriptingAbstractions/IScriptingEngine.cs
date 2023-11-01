@@ -24,7 +24,8 @@ namespace Yextly.Scripting.Abstractions
         /// Runs a script.
         /// </summary>
         /// <param name="script">The script to run.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
-        object? RunScript(IScript script);
+        Task<object?> RunScriptAsync(IScript script, CancellationToken cancellationToken = default);
     }
 }

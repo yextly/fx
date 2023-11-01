@@ -9,7 +9,7 @@ namespace Yextly.Scripting.Abstractions
     /// <summary>
     /// Contains the factories needed to interact with the scripting engine.
     /// </summary>
-    public interface IScriptingEngineFactory
+    public interface IScriptingEngineFactories
     {
         /// <summary>
         /// Creates a new engine.
