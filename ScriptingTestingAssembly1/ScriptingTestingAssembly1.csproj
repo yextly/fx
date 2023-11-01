@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<RootNamespace>Yextly.Scripting.Abstractions</RootNamespace>
-		<AssemblyName>Yextly.Scripting.Abstractions</AssemblyName>
+		<RootNamespace>Yextly.Scripting.Testing.Assembly1</RootNamespace>
+		<AssemblyName>Yextly.Scripting.Testing.Assembly1</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
 		<Description>Scripting engine testing assembly 1</Description>
