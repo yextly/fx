@@ -4,6 +4,7 @@
 //
 // ==--==
 
+using Microsoft.CodeAnalysis;
 using System.Reflection;
 
 namespace Yextly.Scripting.Abstractions
@@ -31,8 +32,14 @@ namespace Yextly.Scripting.Abstractions
         Type? HostInstanceType { get; set; }
 
         /// <summary>
-        /// Contains the referenced assemblies to use.
+        /// Contains the referenced assemblies as metadata.
         /// </summary>
+        IList<MetadataReference> MetadataReferences { get; }
+
+        /// <summary>
+        /// Contains the referenced assemblies to use. This is a shortcut for <see cref="MetadataReferences"/>, since the engine will perform metadata inference from the provided assemblies.
+        /// </summary>
+        /// <remarks>Metadata inference use <see cref="Assembly.Location"/>.</remarks>
         IList<Assembly> References { get; }
 
         /// <summary>
