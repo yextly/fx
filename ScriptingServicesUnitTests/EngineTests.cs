@@ -5,28 +5,32 @@
 // ==--==
 
 using Microsoft.CodeAnalysis;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using Yextly.Scripting.Abstractions;
-using Yextly.Scripting.Services;
 
 namespace ScriptingServicesTests
 {
     public sealed class EngineTests
-
     {
-        [Fact]
-        public void CanBuildTheEngine()
+        [InlineData(ScriptType.Roslyn)]
+        [InlineData(ScriptType.SFA)]
+        [Theory]
+        public void CanBuildTheEngine(ScriptType scriptType)
         {
-            Assert.NotNull(ScriptingServicesFactories.ServiceFactories);
+            Assert.NotNull(GetFactories(scriptType));
         }
 
-        [InlineData(new object[] { "int i = 40; return i + 2;", 42 })]
-        [InlineData(new object[] { "40 + 2 ", 42 })]
+        [InlineData("int i = 40; return i + 2;", 42, ScriptType.SFA)]
+        [InlineData("40 + 2 ", 42, ScriptType.SFA)]
+        [InlineData("int i = 40; return i + 2;", 42, ScriptType.Roslyn)]
+        [InlineData("40 + 2 ", 42, ScriptType.Roslyn)]
         [Theory]
-        public async Task CanBuildTrivialScripts(string text, int expected)
+        public async Task CanBuildTrivialScripts(string text, int expected, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -45,12 +49,14 @@ namespace ScriptingServicesTests
             Assert.Equal(expected, (int)result!);
         }
 
-        [InlineData(new object[] { "int i = 2; return Sum(i, 20);", 42 })]
-        [InlineData(new object[] { "Sum(20, 2)", 42 })]
+        [InlineData("int i = 2; return Sum(i, 20);", 42, ScriptType.Roslyn)]
+        [InlineData("Sum(20, 2)", 42, ScriptType.Roslyn)]
+        [InlineData("int i = 2; return Sum(i, 20);", 42, ScriptType.SFA)]
+        [InlineData("Sum(20, 2)", 42, ScriptType.SFA)]
         [Theory]
-        public async Task CanBuildTrivialScriptsWithHostInstance(string text, int expected)
+        public async Task CanBuildTrivialScriptsWithHostInstance(string text, int expected, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -74,11 +80,12 @@ namespace ScriptingServicesTests
             Assert.Equal(expected, (int)result!);
         }
 
-        [InlineData(new object[] { "HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42 })]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.Roslyn)]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.SFA)]
         [Theory]
-        public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsings(string text, int expected)
+        public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsings(string text, int expected, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -104,13 +111,16 @@ namespace ScriptingServicesTests
             Assert.Equal(expected, (int)result!);
         }
 
-        [InlineData(new object[] { "HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42 })]
-        [InlineData(new object[] { "int useless = 5; HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42 })]
-        [InlineData(new object[] { "int useless = 5; return HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3;", 42 })]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.Roslyn)]
+        [InlineData("int useless = 5; HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.Roslyn)]
+        [InlineData("int useless = 5; return HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3;", 42, ScriptType.Roslyn)]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.SFA)]
+        [InlineData("int useless = 5; HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.SFA)]
+        [InlineData("int useless = 5; return HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3;", 42, ScriptType.SFA)]
         [Theory]
-        public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text, int expected)
+        public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text, int expected, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -135,11 +145,12 @@ namespace ScriptingServicesTests
             Assert.Equal(expected, (int)result!);
         }
 
-        [InlineData(new object[] { "HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42 })]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.Roslyn)]
+        [InlineData("HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42, ScriptType.SFA)]
         [Theory]
-        public async Task CanBuildTrivialScriptsWithSeparateAssembliesWithMetadataAndUsings(string text, int expected)
+        public async Task CanBuildTrivialScriptsWithSeparateAssembliesWithMetadataAndUsings(string text, int expected, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -147,6 +158,8 @@ namespace ScriptingServicesTests
 
             builder.HostInstance = globalContext;
             builder.HostInstanceType = typeof(IContext1);
+            builder.MetadataReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            builder.MetadataReferences.Add(MetadataReference.CreateFromFile(AppDomain.CurrentDomain.GetAssemblies().Single(x => x.FullName?.StartsWith("System.Runtime,", StringComparison.Ordinal) == true).Location));
             builder.MetadataReferences.Add(MetadataReference.CreateFromFile(typeof(Yextly.Scripting.Testing.Assembly1.HostOperations).Assembly.Location));
             builder.Usings.Add(typeof(Yextly.Scripting.Testing.Assembly1.HostOperations).Namespace!);
 
@@ -165,13 +178,16 @@ namespace ScriptingServicesTests
             Assert.Equal(expected, (int)result!);
         }
 
-        [InlineData(new object[] { "4;5;6;" })]
-        [InlineData(new object[] { "4;5;6" })]
-        [InlineData(new object[] { "hostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3" })]
+        [InlineData("4;5;6;", ScriptType.Roslyn)]
+        [InlineData("4;5;6", ScriptType.Roslyn)]
+        [InlineData("hostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", ScriptType.Roslyn)]
+        [InlineData("4;5;6;", ScriptType.SFA)]
+        [InlineData("4;5;6", ScriptType.SFA)]
+        [InlineData("hostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", ScriptType.SFA)]
         [Theory]
-        public void CanDetectErrorsWhenBuildingTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text)
+        public void CanDetectErrorsWhenBuildingTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -190,14 +206,18 @@ namespace ScriptingServicesTests
             Assert.Throws<InvalidSourceTextException>(() => engine.CreateScript(context, text));
         }
 
-        [InlineData(new object[] { "int i = 2; return Sum(i, 20)" })]
-        [InlineData(new object[] { "Sum(20, 2))" })]
-        [InlineData(new object[] { "sum(20, 2)" })]
-        [InlineData(new object[] { "Math.Round(20, 2)" })]
+        [InlineData("int i = 2; return Sum(i, 20)", ScriptType.Roslyn)]
+        [InlineData("Sum(20, 2))", ScriptType.Roslyn)]
+        [InlineData("sum(20, 2)", ScriptType.Roslyn)]
+        [InlineData("Math.Round(20, 2)", ScriptType.Roslyn)]
+        [InlineData("int i = 2; return Sum(i, 20)", ScriptType.SFA)]
+        [InlineData("Sum(20, 2))", ScriptType.SFA)]
+        [InlineData("sum(20, 2)", ScriptType.SFA)]
+        [InlineData("Math.Round(20, 2)", ScriptType.SFA)]
         [Theory]
-        public void CanDetectTrivialScriptErrors(string text)
+        public void CanDetectTrivialScriptErrors(string text, ScriptType scriptType)
         {
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -215,8 +235,10 @@ namespace ScriptingServicesTests
             Assert.Throws<InvalidSourceTextException>(() => engine.CreateScript(context, text));
         }
 
-        [Fact]
-        public async Task CanRunAScriptWithSideEffectsReturingVoid()
+        [InlineData(ScriptType.Roslyn)]
+        [InlineData(ScriptType.SFA)]
+        [Theory]
+        public async Task CanRunAScriptWithSideEffectsReturingVoid(ScriptType scriptType)
         {
             const string text = @"var a = 15;
                 var b = 20;
@@ -225,7 +247,7 @@ namespace ScriptingServicesTests
                 SideEffect2(c);
 ";
 
-            var factory = ScriptingServicesFactories.ServiceFactories;
+            var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
 
@@ -249,6 +271,11 @@ namespace ScriptingServicesTests
             Assert.Null(result);
 
             Assert.Equal(85000, globalContext.Value);
+        }
+
+        private static IScriptingEngineFactories GetFactories(ScriptType scriptType)
+        {
+            return new MultiplexedScriptingEngineFactories(scriptType);
         }
     }
 }
