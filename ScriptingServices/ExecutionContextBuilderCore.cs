@@ -42,6 +42,28 @@ namespace Yextly.Scripting.Services
                 .Distinct(StringComparer.Ordinal)
                 .ToImmutableArray();
 
+            // this is a patch to preserve calls to CreateScript when using references only
+            if (metadataReferences.Length == 0 && !References.Contains(typeof(object).Assembly))
+            {
+                // this is a temporary workaround, before we remove the assembly references.
+                // when you specify the metadata references, you are expected to specify the "object" assembly, so we don't do it here
+                references = references.Add(typeof(object).Assembly);
+
+                var runtime = Array.Find(AppDomain.CurrentDomain.GetAssemblies(), x => string.Equals("System.Runtime", x.GetName().Name, StringComparison.Ordinal));
+
+                if (runtime != null)
+                    references = references.Add(runtime);
+
+                if (HostInstanceType != null && !References.Contains(HostInstanceType.Assembly))
+                    references = references.Add(HostInstanceType.Assembly);
+                if (HostInstance != null && !References.Contains(HostInstance.GetType().Assembly))
+                {
+                    var temp = HostInstance.GetType().Assembly;
+                    if (HostInstanceType == null || HostInstanceType.Assembly != temp)
+                        references = references.Add(temp);
+                }
+            }
+
             return new ExecutionContext(references, metadataReferences, usings, HostInstance, HostInstanceType);
         }
     }
