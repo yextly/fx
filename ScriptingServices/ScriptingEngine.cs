@@ -23,6 +23,7 @@ namespace Yextly.Scripting.Services
             {
                 var options = ScriptOptions.Default
                     .AddReferences(executionContext.References)
+                    .AddReferences(executionContext.MetadataReferences)
                     .AddImports(executionContext.Usings)
                     .WithOptimizationLevel(Microsoft.CodeAnalysis.OptimizationLevel.Release)
                     ;
