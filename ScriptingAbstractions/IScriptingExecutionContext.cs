@@ -4,6 +4,7 @@
 //
 // ==--==
 
+using Microsoft.CodeAnalysis;
 using System.Collections.Immutable;
 using System.Reflection;
 
@@ -24,6 +25,11 @@ namespace Yextly.Scripting.Abstractions
         /// </summary>
         /// <remarks>The type is automatically inferred by the instance passed when bulding the context.</remarks>
         Type? HostInstanceType { get; }
+
+        /// <summary>
+        /// Specifies the list of referenced assemblies.
+        /// </summary>
+        ImmutableArray<MetadataReference> MetadataReferences { get; }
 
         /// <summary>
         /// Specifies the list of referenced assemblies.
