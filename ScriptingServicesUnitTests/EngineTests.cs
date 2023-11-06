@@ -4,6 +4,7 @@
 //
 // ==--==
 
+using Microsoft.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 using Yextly.Scripting.Abstractions;
@@ -118,6 +119,36 @@ namespace ScriptingServicesTests
             builder.HostInstance = globalContext;
             builder.HostInstanceType = typeof(IContext1);
             builder.AutoIncludedTypes.Add(typeof(Yextly.Scripting.Testing.Assembly1.HostOperations));
+
+            var context = builder.Build();
+            Assert.NotNull(context);
+
+            var engine = factory.CreateEngine();
+            Assert.NotNull(engine);
+
+            var e = engine.CreateScript(context, text);
+            Assert.NotNull(e);
+
+            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+
+            Assert.IsType<int>(result);
+            Assert.Equal(expected, (int)result!);
+        }
+
+        [InlineData(new object[] { "HostOperations.Multiply(HostOperations.Sum(5, 10), 3)-3", 42 })]
+        [Theory]
+        public async Task CanBuildTrivialScriptsWithSeparateAssembliesWithMetadataAndUsings(string text, int expected)
+        {
+            var factory = ScriptingServicesFactories.ServiceFactories;
+
+            var builder = factory.CreateScriptingExecutionContextBuilder();
+
+            var globalContext = new Context1(20);
+
+            builder.HostInstance = globalContext;
+            builder.HostInstanceType = typeof(IContext1);
+            builder.MetadataReferences.Add(MetadataReference.CreateFromFile(typeof(Yextly.Scripting.Testing.Assembly1.HostOperations).Assembly.Location));
+            builder.Usings.Add(typeof(Yextly.Scripting.Testing.Assembly1.HostOperations).Namespace!);
 
             var context = builder.Build();
             Assert.NotNull(context);
