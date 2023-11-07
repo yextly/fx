@@ -37,8 +37,15 @@ namespace Yextly.Xunit.Testing
             _categoryName = categoryName;
         }
 
+#if NET6_0
+
         /// <inheritdoc/>
         public IDisposable BeginScope<TState>(TState state) => _scopeProvider.Push(state);
+
+#elif NET7_0_OR_GREATER
+        /// <inheritdoc/>
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull => _scopeProvider.Push(state);
+#endif
 
         /// <inheritdoc/>
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
