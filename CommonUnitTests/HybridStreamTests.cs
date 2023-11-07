@@ -5,6 +5,7 @@
 // ==--==
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -477,7 +478,10 @@ namespace CommonUnitTests
 
             actual.SetLength(newLength);
             actual.Seek(0, SeekOrigin.End);
-            actual.Write(new byte[] { 0x77 }, 0, 1);
+
+            // workaround do defeat the analyzer that thinks we are writing a string
+            var array = new List<byte> { 0x77 };
+            actual.Write(array.ToArray(), 0, 1);
 
             Assert.Equal(expectedLength, actual.Length);
         }
