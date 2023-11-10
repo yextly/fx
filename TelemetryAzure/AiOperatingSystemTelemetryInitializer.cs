@@ -12,7 +12,6 @@ namespace Yextly.Telemetry.Azure
     /// <summary>
     /// Provides Application Insights initialization support.
     /// </summary>
-    /// <remarks>This API supports the telemetry infrastructure and is not intended to be used directly from your code.</remarks>
     public sealed class AiOperatingSystemTelemetryInitializer : IAiTelemetryClientInitializer
     {
         /// <inheritdoc />
