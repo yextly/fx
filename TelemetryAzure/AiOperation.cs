@@ -19,14 +19,14 @@ namespace Yextly.Telemetry.Azure
     public sealed class AiOperation : ITelemetryOperation
     {
         private readonly IOperationHolder<DependencyTelemetry> _operation;
-        private readonly AiCoreTelemetryClient _telemetryClient;
+        private readonly AiTelemetryClient _telemetryClient;
 
         /// <summary>
         /// Creates a new instance.
         /// </summary>
         /// <param name="telemetryClient"></param>
         /// <param name="operation"></param>
-        public AiOperation(AiCoreTelemetryClient telemetryClient, IOperationHolder<DependencyTelemetry> operation)
+        public AiOperation(AiTelemetryClient telemetryClient, IOperationHolder<DependencyTelemetry> operation)
         {
             _telemetryClient = telemetryClient;
             _operation = operation;
