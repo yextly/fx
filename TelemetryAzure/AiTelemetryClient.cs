@@ -17,7 +17,7 @@ namespace Yextly.Telemetry.Azure
     /// Represents a an Application Insights client wrapper.
     /// </summary>
     /// <remarks>This API supports the telemetry infrastructure and is not intended to be used directly from your code.</remarks>
-    public sealed class AiCoreTelemetryClient : ITelemetryClient
+    public sealed class AiTelemetryClient : ITelemetryClient
     {
         private readonly TelemetryClient _telemetryClient;
 
@@ -27,7 +27,7 @@ namespace Yextly.Telemetry.Azure
         /// <param name="telemetryClient"></param>
         /// <param name="initializers"></param>
         /// <param name="serviceProvider"></param>
-        public AiCoreTelemetryClient(TelemetryClient telemetryClient, IAiTelemetryClientInitializers initializers, IServiceProvider serviceProvider)
+        public AiTelemetryClient(TelemetryClient telemetryClient, IAiTelemetryClientInitializers initializers, IServiceProvider serviceProvider)
         {
             ArgumentNullException.ThrowIfNull(telemetryClient);
             ArgumentNullException.ThrowIfNull(initializers);
