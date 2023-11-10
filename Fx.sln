@@ -50,6 +50,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Telemetry", "Telemetry", "{79D00295-3F24-4EFD-A2B3-405EE276B541}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryAbstractions", "TelemetryAbstractions\TelemetryAbstractions.csproj", "{7E09E775-3C31-469A-B148-5049A9466676}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TelemetryAzure", "TelemetryAzure\TelemetryAzure.csproj", "{211218E6-F779-4FFE-A09E-59CD476CC701}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -128,6 +134,14 @@ Global
 		{5EACBE5C-9BC3-4E89-AF87-FE5180971F78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5EACBE5C-9BC3-4E89-AF87-FE5180971F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5EACBE5C-9BC3-4E89-AF87-FE5180971F78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E09E775-3C31-469A-B148-5049A9466676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E09E775-3C31-469A-B148-5049A9466676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E09E775-3C31-469A-B148-5049A9466676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E09E775-3C31-469A-B148-5049A9466676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{211218E6-F779-4FFE-A09E-59CD476CC701}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{211218E6-F779-4FFE-A09E-59CD476CC701}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{211218E6-F779-4FFE-A09E-59CD476CC701}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{211218E6-F779-4FFE-A09E-59CD476CC701}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +155,8 @@ Global
 		{F93DA6DE-79F4-4C8E-AB04-B3C5ABB48123} = {81F67124-3BCD-48DD-B976-824545A146A3}
 		{8A81C57D-304B-4AC3-BD32-34C8D9EED902} = {81F67124-3BCD-48DD-B976-824545A146A3}
 		{5EACBE5C-9BC3-4E89-AF87-FE5180971F78} = {81F67124-3BCD-48DD-B976-824545A146A3}
+		{7E09E775-3C31-469A-B148-5049A9466676} = {79D00295-3F24-4EFD-A2B3-405EE276B541}
+		{211218E6-F779-4FFE-A09E-59CD476CC701} = {79D00295-3F24-4EFD-A2B3-405EE276B541}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5E58D4F4-B5FD-4CE0-A8C5-C4AF7F4B2759}
