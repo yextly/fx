@@ -39,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IAiTelemetryClientInitializers>(new AiTelemetryClientInitializers(initializers));
 
             if (options.Enabled)
-                services.TryAddSingleton<ITelemetryClient, AiCoreTelemetryClient>();
+                services.TryAddSingleton<ITelemetryClient, AiTelemetryClient>();
             else
                 services.TryAddSingleton<ITelemetryClient, AiNoTelemetryClient>();
 
