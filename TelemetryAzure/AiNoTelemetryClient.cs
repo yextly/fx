@@ -40,7 +40,7 @@ namespace Yextly.Telemetry.Azure
         /// <inheritdoc />
         public ITelemetryOperation TrackOperation(string operationName, string type)
         {
-            throw new NotImplementedException();
+            return new NullOperation();
         }
 
         private sealed class NullOperation : ITelemetryOperation
