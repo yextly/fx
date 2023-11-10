@@ -7,7 +7,7 @@
 namespace Yextly.Telemetry.Abstractions
 {
     /// <summary>
-    /// Represents an telemetry client
+    /// Represents the abstraction client.
     /// </summary>
     public interface ITelemetryClient : ITelemetryCommonOperation
     {
