@@ -58,6 +58,8 @@ namespace Yextly.Scripting.Services
 
             var diagnostics = new List<Diagnostic>();
 
+            bool catchExceptions = true;
+
             try
             {
                 var parseOptions = new CSharpParseOptions(languageVersion: LanguageVersion.Latest, kind: SourceCodeKind.Script);
@@ -125,15 +127,16 @@ namespace Yextly.Scripting.Services
 
                 if (methodInvoker == null)
                 {
-                    var ex = new InvalidOperationException("The compilation has failed.");
+                    var ex = new InvalidOperationException("The provided text cannot be compiled due to syntax errors.");
                     ex.Data.Add("Diagnostics", diagnostics);
 
+                    catchExceptions = false;
                     throw ex;
                 }
 
                 return new AssemblyBackedScript(id, executionContext, methodInvoker, text);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (catchExceptions)
             {
                 throw new InvalidSourceTextException("The provided text cannot be compiled into executable code.", ex);
             }
