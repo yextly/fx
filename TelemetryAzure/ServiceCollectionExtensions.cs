@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="configure">The configure method.</param>
         /// <returns></returns>
         /// <remarks>You may need to add the proper Application Insights collectors before calling this method.</remarks>
-        public static IServiceCollection AddApplicationInsightsTelemetry(this IServiceCollection services, Action<AiTelemetryInitializationOptions>? configure = null)
+        public static IServiceCollection AddApplicationInsightsTelemetryHelpers(this IServiceCollection services, Action<AiTelemetryInitializationOptions>? configure = null)
         {
             ArgumentNullException.ThrowIfNull(services);
 
