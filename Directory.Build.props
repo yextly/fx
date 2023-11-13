@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
 <Project>
-	<PropertyGroup>
-		<Company>Yextly Group</Company>
-		<Copyright>Copyright © Yextly Group</Copyright>
-		<NoWarn>$(NoWarn);CA1014;CA1812;NU1507</NoWarn>
+    <PropertyGroup>
+        <Company>Yextly Group</Company>
+        <Copyright>Copyright © Yextly Group</Copyright>
+        <NoWarn>$(NoWarn);CA1014;CA1812;NU1507</NoWarn>
 
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
-		<EnableNETAnalyzers>True</EnableNETAnalyzers>
-		<AnalysisMode>All</AnalysisMode>
+        <EnableNETAnalyzers>True</EnableNETAnalyzers>
+        <AnalysisMode>All</AnalysisMode>
 
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
 
-		<WarnOnPackingNonPackableProject>True</WarnOnPackingNonPackableProject>
+        <WarnOnPackingNonPackableProject>True</WarnOnPackingNonPackableProject>
 
-		<GitDefaultBranch>main</GitDefaultBranch>
-		<GitTagRegex>v?*</GitTagRegex>
-		<GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
-		<GitIgnoreTagVersion>false</GitIgnoreTagVersion>
+        <GitDefaultBranch>main</GitDefaultBranch>
+        <GitTagRegex>v?*</GitTagRegex>
+        <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
+        <GitIgnoreTagVersion>false</GitIgnoreTagVersion>
 
-		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+        <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Authors>Yextly Group; Contributors</Authors>
-		<PackageProjectUrl>https://github.com/yextly/fx</PackageProjectUrl>
-		<PackageReleaseNotes>See $(PackageProjectUrl)/blob/main/CHANGELOG.md#$(VersionSuffix.Replace('.','')) for release notes.</PackageReleaseNotes>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Authors>Yextly Group; Contributors</Authors>
+        <PackageProjectUrl>https://github.com/yextly/fx</PackageProjectUrl>
+        <PackageReleaseNotes>See $(PackageProjectUrl)/blob/main/CHANGELOG.md#$(VersionSuffix.Replace('.','')) for release notes.</PackageReleaseNotes>
 
-		<RepositoryType>git</RepositoryType>
-		<RepositoryUrl>https://github.com/yextly/fx.git</RepositoryUrl>
-		<!-- <PackageReadmeFile>Packages.md</PackageReadmeFile> -->
-	</PropertyGroup>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/yextly/fx.git</RepositoryUrl>
+        <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
+
+        <PackageIcon>Package.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="$([System.IO.Path]::Combine($(MSBuildThisFileDirectory),&quot;Images&quot;,&quot;Package.png&quot;))">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="$([System.IO.Path]::Combine($(MSBuildThisFileDirectory),&quot;Docs&quot;,&quot;PackageReadme.md&quot;))">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
 </Project>

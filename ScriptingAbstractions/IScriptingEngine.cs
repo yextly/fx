@@ -26,7 +26,7 @@ namespace Yextly.Scripting.Abstractions
         /// <param name="executionContext">The execution context.</param>
         /// <param name="text">The text that must be compiled to a script.</param>
         /// <returns></returns>
-        /// <remarks>This is a workaround method for https://github.com/dotnet/roslyn/issues/50719 and a serious side effect of polluting the domain with multiple assmblies.
+        /// <remarks>This is a workaround method for https://github.com/dotnet/roslyn/issues/50719 and a serious side effect of polluting the domain with multiple assemblies.
         /// Additionally, since we won't add unsafe code here, you need to provide the metadata for `typeof(object).Assembly`.
         /// </remarks>
         IScript CreateScriptForSingleFileApplication(IScriptingExecutionContext executionContext, string text);
