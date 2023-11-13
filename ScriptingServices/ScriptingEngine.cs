@@ -127,7 +127,7 @@ namespace Yextly.Scripting.Services
 
                 if (methodInvoker == null)
                 {
-                    var ex = new InvalidOperationException("The provided text cannot be compiled due to syntax errors.");
+                    var ex = new InvalidSourceTextException("The provided text cannot be compiled due to syntax errors.");
                     ex.Data.Add("Diagnostics", diagnostics);
 
                     catchExceptions = false;
