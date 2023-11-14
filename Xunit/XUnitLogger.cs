@@ -5,6 +5,7 @@
 // ==--==
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.ObjectPool;
 using System.Diagnostics;
 using System.Text;
 using Xunit.Abstractions;
@@ -19,6 +20,14 @@ namespace Yextly.Xunit.Testing
         private readonly string _categoryName;
         private readonly LoggerExternalScopeProvider _scopeProvider;
         private readonly ITestOutputHelper _testOutputHelper;
+        private static readonly Lazy<ObjectPool<StringBuilder>> _pool = new(InitializePool, LazyThreadSafetyMode.PublicationOnly);
+
+        private static ObjectPool<StringBuilder> InitializePool()
+        {
+            var provider = new DefaultObjectPoolProvider();
+            var policy = new StringBuilderPooledObjectPolicy();
+            return provider.Create(policy);
+        }
 
         /// <summary>
         /// Creates a new <see cref="XUnitLogger"/> instance.
@@ -53,30 +62,36 @@ namespace Yextly.Xunit.Testing
         /// <inheritdoc/>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
         {
-            if (formatter is null)
+            ArgumentNullException.ThrowIfNull(formatter);
+
+            var pool = _pool.Value;
+
+            var sb = pool.Get();
+            try
             {
-                throw new ArgumentNullException(nameof(formatter));
+                sb.Append(GetLogLevelString(logLevel))
+                  .Append(" [").Append(_categoryName).Append("] ")
+                  .Append(formatter(state, exception));
+
+                if (exception != null)
+                {
+                    sb.Append('\n').Append(exception);
+                }
+
+                // Append scopes
+                _scopeProvider.ForEachScope((scope, state) =>
+                {
+                    state.Append("\n => ");
+                    state.Append(scope);
+                }, sb);
+
+                _testOutputHelper.WriteLine(sb.ToString());
+                Debug.WriteLine(sb.ToString());
             }
-
-            var sb = new StringBuilder();
-            sb.Append(GetLogLevelString(logLevel))
-              .Append(" [").Append(_categoryName).Append("] ")
-              .Append(formatter(state, exception));
-
-            if (exception != null)
+            finally
             {
-                sb.Append('\n').Append(exception);
+                pool.Return(sb);
             }
-
-            // Append scopes
-            _scopeProvider.ForEachScope((scope, state) =>
-            {
-                state.Append("\n => ");
-                state.Append(scope);
-            }, sb);
-
-            _testOutputHelper.WriteLine(sb.ToString());
-            Debug.WriteLine(sb.ToString());
         }
 
         private static string GetLogLevelString(LogLevel logLevel)
