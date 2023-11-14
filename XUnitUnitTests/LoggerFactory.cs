@@ -54,7 +54,7 @@ namespace XUnitUnitTests
 
             using var source = new CancellationTokenSource(_timeout);
 
-            const string expected = @"(?s)^warn \[XUnitUnitTests\.LoggerFactory\] M2#DEF#[\n|\r\n|\n\r]System\.InvalidOperationException\: OP1[\n|\r\n|\n\r]\s+at XUnitUnitTests\.LoggerFactory\.CanLogExceptions\(\) in (.*)$";
+            const string expected = @"(?s)^warn \[XUnitUnitTests\.LoggerFactory, 2, LogWarning1\] M2#DEF#[\n|\r\n|\n\r]System\.InvalidOperationException\: OP1[\n|\r\n|\n\r]\s+at XUnitUnitTests\.LoggerFactory\.CanLogExceptions\(\) in (.*)$";
 
             var actual = await assertHelper.GetValueAsync(source.Token).ConfigureAwait(true);
 
@@ -76,7 +76,7 @@ namespace XUnitUnitTests
 
             using var source = new CancellationTokenSource(_timeout);
 
-            const string expected = "info [XUnitUnitTests.LoggerFactory] M1#ABC#";
+            const string expected = "info [XUnitUnitTests.LoggerFactory, 1, LogInfo1] M1#ABC#";
 
             var actual = await assertHelper.GetValueAsync(source.Token).ConfigureAwait(true);
 

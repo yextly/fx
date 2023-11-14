@@ -69,9 +69,20 @@ namespace Yextly.Xunit.Testing
             var sb = pool.Get();
             try
             {
-                sb.Append(GetLogLevelString(logLevel))
-                  .Append(" [").Append(_categoryName).Append("] ")
-                  .Append(formatter(state, exception));
+                sb.Append(GetLogLevelString(logLevel));
+                sb.Append(" [");
+                sb.Append(_categoryName);
+
+                if (eventId.Id != 0)
+                {
+                    sb.Append(", ");
+                    sb.Append(eventId.Id);
+                    sb.Append(", ");
+                    sb.Append(eventId.Name);
+                }
+
+                sb.Append("] ");
+                sb.Append(formatter(state, exception));
 
                 if (exception != null)
                 {
