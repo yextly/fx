@@ -610,10 +610,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <returns></returns>
         protected virtual async Task<AffectedItemsResponse> UpdateEntitiesInternal(UpdateMultipleEntitiesRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             var r = new UpdateSingleEntityRequest<TInnerEntity>
             {
