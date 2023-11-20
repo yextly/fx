@@ -32,7 +32,7 @@ namespace CrudUnitTests
             var controller = new Data1Controller(logger, adapter.Object, source);
             var request = new GetMultipleEntitiesRequest
             {
-                Ids = new string[] { id.ToStringInvariant() },
+                Ids = [id.ToStringInvariant()],
             };
 
             var result = await controller.GetMultipleForTesting(request).ConfigureAwait(true);
@@ -100,8 +100,8 @@ namespace CrudUnitTests
             var controller = new Data1Controller(logger, adapter.Object, source);
             var request = new GetListRequest
             {
-                Filter = new FilterFieldInfo[]
-                {
+                Filter =
+                [
                      new FilterFieldInfo
                      {
                           Name = "allegiances", Value = "st",
@@ -110,12 +110,12 @@ namespace CrudUnitTests
                      {
                           Name = "introduction", Value = "16",
                      },
-                },
-                Sorting = new SortFieldInfo[]
-                 {
+                ],
+                Sorting =
+                 [
                       new SortFieldInfo { Name =   "id", SortType = SortType.Descending
                       },
-                 },
+                 ],
                 Range = new RangeInfo
                 {
                     Start = 1,
@@ -157,20 +157,20 @@ namespace CrudUnitTests
             var controller = new Data1Controller(logger, adapter.Object, source);
             var request = new GetListRequest
             {
-                Filter = new FilterFieldInfo[]
-                {
+                Filter =
+                [
                      new FilterFieldInfo
                      {
                           Name = "IdAsGuid", Value = "00000337-0000-0000-0000-000000000000",
                      },
-                },
-                Sorting = new SortFieldInfo[]
-                {
+                ],
+                Sorting =
+                [
                      new SortFieldInfo
                      {
                          Name =   "id", SortType = SortType.Descending
                      },
-                }
+                ]
             };
 
             var result = await controller.GetListForTesting(request).ConfigureAwait(true);

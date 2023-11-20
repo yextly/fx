@@ -37,9 +37,5 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         public ValidationException(string message, Exception inner) : base(message, inner)
         {
         }
-
-        private ValidationException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

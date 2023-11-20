@@ -18,6 +18,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// </summary>
         [JsonPropertyName("ids")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1819:Properties should not return arrays", Justification = "This is a DTO")]
-        public string[] Ids { get; set; } = Array.Empty<string>();
+        public string[] Ids { get; set; } = [];
     }
 }

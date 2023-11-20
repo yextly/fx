@@ -11,21 +11,12 @@ using Yextly.Scripting.Abstractions;
 
 namespace Yextly.Scripting.Services
 {
-    internal sealed class ExecutionContext : IScriptingExecutionContext
+    internal sealed class ExecutionContext(ImmutableArray<Assembly> references, ImmutableArray<MetadataReference> metadataReferences, ImmutableArray<string> usings, object? hostInstance, Type? hostInstanceType) : IScriptingExecutionContext
     {
-        public ExecutionContext(ImmutableArray<Assembly> references, ImmutableArray<MetadataReference> metadataReferences, ImmutableArray<string> usings, object? hostInstance, Type? hostInstanceType)
-        {
-            References = references;
-            MetadataReferences = metadataReferences;
-            Usings = usings;
-            HostInstance = hostInstance;
-            HostInstanceType = hostInstanceType;
-        }
-
-        public object? HostInstance { get; }
-        public Type? HostInstanceType { get; }
-        public ImmutableArray<MetadataReference> MetadataReferences { get; }
-        public ImmutableArray<Assembly> References { get; }
-        public ImmutableArray<string> Usings { get; }
+        public object? HostInstance { get; } = hostInstance;
+        public Type? HostInstanceType { get; } = hostInstanceType;
+        public ImmutableArray<MetadataReference> MetadataReferences { get; } = metadataReferences;
+        public ImmutableArray<Assembly> References { get; } = references;
+        public ImmutableArray<string> Usings { get; } = usings;
     }
 }

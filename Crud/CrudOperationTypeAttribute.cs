@@ -7,13 +7,8 @@
 namespace Yextly.ServiceFabric.Mvc.Crud
 {
     [System.AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
-    internal sealed class CrudOperationTypeAttribute : Attribute
+    internal sealed class CrudOperationTypeAttribute(OperationType operationType) : Attribute
     {
-        public OperationType OperationType { get; }
-
-        public CrudOperationTypeAttribute(OperationType operationType)
-        {
-            OperationType = operationType;
-        }
+        public OperationType OperationType { get; } = operationType;
     }
 }

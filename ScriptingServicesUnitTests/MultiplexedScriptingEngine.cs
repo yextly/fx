@@ -11,16 +11,10 @@ using Yextly.Scripting.Abstractions;
 
 namespace ScriptingServicesTests
 {
-    internal sealed class MultiplexedScriptingEngine : IScriptingEngine
+    internal sealed class MultiplexedScriptingEngine(IScriptingEngine inner, ScriptType scriptType) : IScriptingEngine
     {
-        private readonly IScriptingEngine _inner;
-        private readonly ScriptType _scriptType;
-
-        public MultiplexedScriptingEngine(IScriptingEngine inner, ScriptType scriptType)
-        {
-            _inner = inner;
-            _scriptType = scriptType;
-        }
+        private readonly IScriptingEngine _inner = inner;
+        private readonly ScriptType _scriptType = scriptType;
 
         public IScript CreateScript(IScriptingExecutionContext executionContext, string text)
         {

@@ -11,12 +11,8 @@ using Yextly.ServiceFabric.Mvc.Crud;
 
 namespace CrudUnitTests
 {
-    internal sealed class Data1Controller : CrudResourceControllerBase<Data1, Data1>
+    internal sealed class Data1Controller(ILogger<Data1Controller> logger, ICrudDataAdapter<Data1> adapter, IQueryable<Data1> entities) : CrudResourceControllerBase<Data1, Data1>(logger, adapter, entities)
     {
-        public Data1Controller(ILogger<Data1Controller> logger, ICrudDataAdapter<Data1> adapter, IQueryable<Data1> entities) : base(logger, adapter, entities)
-        {
-        }
-
         public Task<CrudCollectionResult<Data1>> GetListForTesting(GetListRequest request)
         {
             return base.GetListInternal(request);
