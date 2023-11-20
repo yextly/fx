@@ -629,7 +629,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
             var response = new AffectedItemsResponse
             {
-                Ids = affected.ToArray(),
+                Ids = [.. affected],
             };
             return response;
         }
