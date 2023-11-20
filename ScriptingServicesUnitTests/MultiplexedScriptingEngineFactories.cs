@@ -9,16 +9,10 @@ using Yextly.Scripting.Services;
 
 namespace ScriptingServicesTests
 {
-    internal sealed class MultiplexedScriptingEngineFactories : IScriptingEngineFactories
+    internal sealed class MultiplexedScriptingEngineFactories(ScriptType scriptType) : IScriptingEngineFactories
     {
-        private readonly IScriptingEngineFactories _factories;
-        private readonly ScriptType _scriptType;
-
-        public MultiplexedScriptingEngineFactories(ScriptType scriptType)
-        {
-            _factories = ScriptingServicesFactories.ServiceFactories;
-            _scriptType = scriptType;
-        }
+        private readonly IScriptingEngineFactories _factories = ScriptingServicesFactories.ServiceFactories;
+        private readonly ScriptType _scriptType = scriptType;
 
         public IScriptingEngine CreateEngine()
         {
