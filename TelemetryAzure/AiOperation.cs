@@ -8,6 +8,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.ApplicationInsights.Extensibility;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Yextly.Telemetry.Abstractions;
 
 namespace Yextly.Telemetry.Azure
@@ -16,21 +17,16 @@ namespace Yextly.Telemetry.Azure
     /// Represents a wrapped Application Insights operation.
     /// </summary>
     /// <remarks>This API supports the telemetry infrastructure and is not intended to be used directly from your code.</remarks>
-    public sealed class AiOperation : ITelemetryOperation
+    /// <remarks>
+    /// Creates a new instance.
+    /// </remarks>
+    /// <param name="telemetryClient"></param>
+    /// <param name="operation"></param>
+    public sealed class AiOperation(AiTelemetryClient telemetryClient, IOperationHolder<DependencyTelemetry> operation) : ITelemetryOperation
     {
-        private readonly IOperationHolder<DependencyTelemetry> _operation;
-        private readonly AiTelemetryClient _telemetryClient;
-
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="telemetryClient"></param>
-        /// <param name="operation"></param>
-        public AiOperation(AiTelemetryClient telemetryClient, IOperationHolder<DependencyTelemetry> operation)
-        {
-            _telemetryClient = telemetryClient;
-            _operation = operation;
-        }
+        private readonly IOperationHolder<DependencyTelemetry> _operation = operation;
+        private readonly AiTelemetryClient _telemetryClient = telemetryClient;
+        private bool _disposed;
 
         /// <inheritdoc />
         public string Id => _operation.Telemetry.Id;
@@ -56,7 +52,13 @@ namespace Yextly.Telemetry.Azure
         /// <inheritdoc />
         public void Dispose()
         {
+            if (_disposed)
+                return;
+
+            _disposed = true;
             _telemetryClient.InnerClient.StopOperation(_operation);
+
+            ((IDisposable)_operation).Dispose();
         }
 
         /// <inheritdoc />
