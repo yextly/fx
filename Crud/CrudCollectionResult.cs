@@ -29,7 +29,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [Required]
         [JsonPropertyName("data")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a DTO")]
-        public List<object> Data { get; init; } = new List<object>();
+        public List<object> Data { get; init; } = [];
     }
 
     /// <summary>
@@ -52,6 +52,6 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         [Required]
         [JsonPropertyName("data")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1002:Do not expose generic lists", Justification = "This is a DTO")]
-        public List<TEntity> Data { get; init; } = new List<TEntity>();
+        public List<TEntity> Data { get; init; } = [];
     }
 }
