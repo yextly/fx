@@ -273,9 +273,7 @@ namespace ScriptingServicesTests
             Assert.Equal(85000, globalContext.Value);
         }
 
-        private static IScriptingEngineFactories GetFactories(ScriptType scriptType)
-        {
-            return new MultiplexedScriptingEngineFactories(scriptType);
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "We need the interface")]
+        private static IScriptingEngineFactories GetFactories(ScriptType scriptType) => new MultiplexedScriptingEngineFactories(scriptType);
     }
 }

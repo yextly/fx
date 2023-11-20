@@ -39,6 +39,10 @@ namespace Yextly.Scripting.Abstractions
         }
 
         /// <inheritdoc />
+#if NET8_0_OR_GREATER
+        [Obsolete("This feature is being phased out https://github.com/dotnet/docs/issues/34893", DiagnosticId = "SYSLIB0051")]
+#endif
+
         protected ScriptingEngineException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
         {
         }
