@@ -1,2 +1,3 @@
 # fx
-.NET Core Framework libraries. 
+
+Collection of .NET Core Framework libraries.
