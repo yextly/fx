@@ -9,21 +9,16 @@ namespace Yextly.ServiceFabric.Mvc
     /// <summary>
     /// Specifies a routing policy for a route.
     /// </summary>
+    /// <remarks>
+    /// Creates a new <see cref="RoutePolicyAttribute"/> instance.
+    /// </remarks>
+    /// <param name="knownPolicy">The policy to apply.</param>
     [System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    public sealed class RoutePolicyAttribute : Attribute
+    public sealed class RoutePolicyAttribute(KnownPolicies knownPolicy) : Attribute
     {
         /// <summary>
         /// The policy to apply to the route.
         /// </summary>
-        public KnownPolicies KnownPolicy { get; }
-
-        /// <summary>
-        /// Creates a new <see cref="RoutePolicyAttribute"/> instance.
-        /// </summary>
-        /// <param name="knownPolicy">The policy to apply.</param>
-        public RoutePolicyAttribute(KnownPolicies knownPolicy)
-        {
-            KnownPolicy = knownPolicy;
-        }
+        public KnownPolicies KnownPolicy { get; } = knownPolicy;
     }
 }

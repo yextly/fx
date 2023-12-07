@@ -13,8 +13,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         public static IQueryable<T> Page<T>(IQueryable<T> source, int first, int count)
         {
-            if (source == null)
-                throw new ArgumentNullException(nameof(source));
+            ArgumentNullException.ThrowIfNull(source);
 
             if (first < 0)
                 first = 0;

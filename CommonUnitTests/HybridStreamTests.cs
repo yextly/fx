@@ -20,6 +20,8 @@ namespace CommonUnitTests
 
         public HybridStreamTests(ITestOutputHelper testOutputHelper)
         {
+            ArgumentNullException.ThrowIfNull(testOutputHelper);
+
             _testOutputHelper = testOutputHelper;
         }
 
@@ -383,7 +385,7 @@ namespace CommonUnitTests
 
             actual.SetLength(newLength);
             actual.Seek(0, SeekOrigin.Begin);
-            var read = actual.Read(Array.Empty<byte>(), 0, 0);
+            var read = actual.Read([], 0, 0);
 
             Assert.Equal(0, read);
         }
@@ -481,7 +483,7 @@ namespace CommonUnitTests
 
             // workaround do defeat the analyzer that thinks we are writing a string
             var array = new List<byte> { 0x77 };
-            actual.Write(array.ToArray(), 0, 1);
+            actual.Write([.. array], 0, 1);
 
             Assert.Equal(expectedLength, actual.Length);
         }
@@ -498,14 +500,14 @@ namespace CommonUnitTests
 
             actual.SetLength(newLength);
             actual.Seek(0, SeekOrigin.End);
-            actual.Write(Array.Empty<byte>(), 0, 0);
+            actual.Write([], 0, 0);
 
             Assert.Equal(newLength, actual.Length);
         }
 
         private static Random CreateRandom() => new(0);
 
-        private static Stream CreateStream(int length, byte seed = 0, bool writable = false)
+        private static MemoryStream CreateStream(int length, byte seed = 0, bool writable = false)
         {
             var buffer = new byte[length];
 

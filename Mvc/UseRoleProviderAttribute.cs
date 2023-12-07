@@ -9,21 +9,16 @@ namespace Yextly.ServiceFabric.Mvc
     /// <summary>
     /// Instructs the advertiser to dynamically obtain the roles by invoking the indicated provider.
     /// </summary>
+    /// <remarks>
+    /// Creates a new <see cref="UseRoleProviderAttribute"/> instance.
+    /// </remarks>
+    /// <param name="providerType">The type of the provider to use.</param>
     [System.AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
-    public sealed class UseRoleProviderAttribute : Attribute
+    public sealed class UseRoleProviderAttribute(Type providerType) : Attribute
     {
         /// <summary>
         /// Specifies the provider to use.
         /// </summary>
-        public Type ProviderType { get; }
-
-        /// <summary>
-        /// Creates a new <see cref="UseRoleProviderAttribute"/> instance.
-        /// </summary>
-        /// <param name="providerType">The type of the provider to use.</param>
-        public UseRoleProviderAttribute(Type providerType)
-        {
-            ProviderType = providerType ?? throw new ArgumentNullException(nameof(providerType));
-        }
+        public Type ProviderType { get; } = providerType ?? throw new ArgumentNullException(nameof(providerType));
     }
 }

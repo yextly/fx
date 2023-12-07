@@ -38,8 +38,7 @@ namespace Yextly.Common
         public HybridStream(Stream source, int pageSize)
         {
             ArgumentNullException.ThrowIfNull(source);
-            if (pageSize <= 0)
-                throw new ArgumentOutOfRangeException(nameof(pageSize));
+            ArgumentOutOfRangeThrowHelper.ThrowIfNegativeOrZero(pageSize);
 
             _inner = source.AsNonOwned();
             _pageSize = pageSize;
@@ -49,7 +48,7 @@ namespace Yextly.Common
 
             _originalLength = _inner.Value.Length;
             _currentLength = _originalLength;
-            _pages = new List<byte[]?>();
+            _pages = [];
             _currentPosition = _inner.Value.Position;
 
             EnsureAvailablePagesFor(_currentLength, false);
@@ -156,8 +155,7 @@ namespace Yextly.Common
         /// <inheritdoc/>
         public override void SetLength(long value)
         {
-            if (value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value));
+            ArgumentOutOfRangeThrowHelper.ThrowIfNegative(value);
 
             if (value == _currentLength)
             {

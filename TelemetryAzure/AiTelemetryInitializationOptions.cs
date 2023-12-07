@@ -13,7 +13,7 @@ namespace Yextly.Telemetry.Azure
     /// </summary>
     public sealed class AiTelemetryInitializationOptions
     {
-        private readonly List<Type> _types = new();
+        private readonly List<Type> _types = [];
 
         /// <summary>
         /// Specifies whether or not the engine should be enabled or not.

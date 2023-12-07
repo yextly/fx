@@ -248,7 +248,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         {
             try
             {
-                var t = await GetMultipleInternal(new GetMultipleEntitiesRequest { Ids = new string[] { id } }, true).ConfigureAwait(false);
+                var t = await GetMultipleInternal(new GetMultipleEntitiesRequest { Ids = [id] }, true).ConfigureAwait(false);
 
                 if (t.Data.Count == 1)
                 {
@@ -412,7 +412,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
             // the contract here is that we return the deleted item, therefore we must fetch it first.
             // at the moment we do not check previous data. we probably ought to prevent concurreny issues, but this will be in the future
 
-            var t = await GetMultipleInternal(new GetMultipleEntitiesRequest { Ids = new string[] { request.Id } }, false).ConfigureAwait(false);
+            var t = await GetMultipleInternal(new GetMultipleEntitiesRequest { Ids = [request.Id] }, false).ConfigureAwait(false);
 
             if (t.Data.Count == 0)
             {
@@ -610,10 +610,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <returns></returns>
         protected virtual async Task<AffectedItemsResponse> UpdateEntitiesInternal(UpdateMultipleEntitiesRequest<TInnerEntity> request)
         {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
+            ArgumentNullException.ThrowIfNull(request);
 
             var r = new UpdateSingleEntityRequest<TInnerEntity>
             {
@@ -632,7 +629,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
             var response = new AffectedItemsResponse
             {
-                Ids = affected.ToArray(),
+                Ids = [.. affected],
             };
             return response;
         }
@@ -695,7 +692,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         private static IList CreateList(Type propertyType)
         {
-            return (IList)(Activator.CreateInstance(typeof(List<>).MakeGenericType(new Type[] { propertyType })) ?? throw new InvalidOperationException());
+            return (IList)(Activator.CreateInstance(typeof(List<>).MakeGenericType([propertyType])) ?? throw new InvalidOperationException());
         }
 
         private static object? CreateValueForExactMatch(string value, Type propertyType)

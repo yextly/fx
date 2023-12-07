@@ -37,10 +37,5 @@ namespace Yextly.Scripting.Abstractions
         public InvalidSourceTextException(string message, Exception inner) : base(message, inner)
         {
         }
-
-        /// <inheritdoc />
-        private InvalidSourceTextException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

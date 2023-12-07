@@ -12,20 +12,15 @@ namespace Yextly.Telemetry.Azure
     /// Provides the initialization of the Application Insights Telemetry clients.
     /// </summary>
     /// <remarks>This API supports the telemetry infrastructure and is not intended to be used directly from your code.</remarks>
-    public sealed class AiTelemetryClientInitializers : IAiTelemetryClientInitializers
+    /// <remarks>
+    /// Creates a new instance.
+    /// </remarks>
+    /// <param name="initializer"></param>
+    public sealed class AiTelemetryClientInitializers(ImmutableArray<Type> initializer) : IAiTelemetryClientInitializers
     {
-        /// <summary>
-        /// Creates a new instance.
-        /// </summary>
-        /// <param name="initializer"></param>
-        public AiTelemetryClientInitializers(ImmutableArray<Type> initializer)
-        {
-            Initializers = initializer;
-        }
-
         /// <summary>
         /// Returns the registered initializers.
         /// </summary>
-        public ImmutableArray<Type> Initializers { get; }
+        public ImmutableArray<Type> Initializers { get; } = initializer;
     }
 }

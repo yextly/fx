@@ -177,7 +177,7 @@ namespace Yextly.Scripting.Services
             try
             {
                 // in this very moment, we don't support cancellation. however, we try to pass it as second parameter (which will be probably ignored)
-                var task = (Task<object>)script.Runner(new[] { script.ExecutionContext.HostInstance, cancellationToken });
+                var task = (Task<object>)script.Runner([script.ExecutionContext.HostInstance, cancellationToken]);
 
                 cancellationToken.ThrowIfCancellationRequested();
 

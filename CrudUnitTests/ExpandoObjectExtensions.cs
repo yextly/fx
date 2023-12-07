@@ -23,8 +23,7 @@ namespace CrudUnitTests
 
         private static PropertyInfo? GetPropertyInfo2<T, Q>(Expression<Func<T, Q>> expression)
         {
-            if (expression == null)
-                throw new ArgumentNullException(nameof(expression));
+            ArgumentNullException.ThrowIfNull(expression);
 
             // here we accept x.Property1, no nesting
 

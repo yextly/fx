@@ -52,6 +52,7 @@ namespace Yextly.Xunit
             public readonly int[] Current;
             public readonly ImmutableArray<int> Sizes;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0305:Simplify collection initialization", Justification = "Broken in net6")]
             public Counter(int[] count)
             {
                 Sizes = count.ToImmutableArray();

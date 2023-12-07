@@ -8,16 +8,10 @@ using Xunit.Abstractions;
 
 namespace XUnitUnitTests
 {
-    internal sealed class DualTestOutputHelper : ITestOutputHelper
+    internal sealed class DualTestOutputHelper(ITestOutputHelper first, ITestOutputHelper second) : ITestOutputHelper
     {
-        private readonly ITestOutputHelper _first;
-        private readonly ITestOutputHelper _second;
-
-        public DualTestOutputHelper(ITestOutputHelper first, ITestOutputHelper second)
-        {
-            _first = first;
-            _second = second;
-        }
+        private readonly ITestOutputHelper _first = first;
+        private readonly ITestOutputHelper _second = second;
 
         public void WriteLine(string message)
         {

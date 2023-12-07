@@ -36,7 +36,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         public static MethodInfo GetEFLikeMethod()
         {
-            return typeof(DbFunctionsExtensions).GetMethod(nameof(DbFunctionsExtensions.Like), BindingFlags.Public | BindingFlags.Static, new Type[] { typeof(DbFunctions), typeof(string), typeof(string) }) ?? throw new InvalidOperationException("Cannot find EF.Functions.Like.");
+            return typeof(DbFunctionsExtensions).GetMethod(nameof(DbFunctionsExtensions.Like), BindingFlags.Public | BindingFlags.Static, [typeof(DbFunctions), typeof(string), typeof(string)]) ?? throw new InvalidOperationException("Cannot find EF.Functions.Like.");
         }
 
         public static PropertyInfo GetPropertyByName<T>(string name)
@@ -46,18 +46,17 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         public static MethodInfo GetSearchHelperLikeMethod()
         {
-            return typeof(SearchHelpers).GetMethod(nameof(SearchHelpers.Like), BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic, new Type[] { typeof(string), typeof(string) }) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
+            return typeof(SearchHelpers).GetMethod(nameof(SearchHelpers.Like), BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic, [typeof(string), typeof(string)]) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
         }
 
         public static MethodInfo GetSystemStringCompareMethod()
         {
-            return typeof(string).GetMethod(nameof(string.Contains), new Type[] { typeof(string), typeof(StringComparison) }) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
+            return typeof(string).GetMethod(nameof(string.Contains), [typeof(string), typeof(StringComparison)]) ?? throw new InvalidOperationException("Cannot find System.String.Equals.");
         }
 
         public static bool TryGetDbContextType(Type type, [MaybeNullWhen(false)] out Type innerType)
         {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
+            ArgumentNullException.ThrowIfNull(type);
 
             if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(DbSet<>)))
             {
