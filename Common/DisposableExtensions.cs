@@ -15,6 +15,9 @@ namespace System
     {
         /// <summary>
         /// Creates a wrapper against the porvided instance so that it will not be diposed.
+
+        /// <summary>
+        /// Creates a wrapper against the provided instance so that it will not be disposed.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="value">The instance to wrap.</param>
