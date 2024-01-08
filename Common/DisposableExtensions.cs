@@ -4,6 +4,7 @@
 //
 // ==--==
 
+using System.Runtime.CompilerServices;
 using Yextly.Common;
 
 namespace System
@@ -14,7 +15,21 @@ namespace System
     public static class DisposableExtensions
     {
         /// <summary>
-        /// Creates a wrapper against the porvided instance so that it will not be diposed.
+        /// Implements the trick described in https://github.com/dotnet/csharplang/discussions/2661 to limit the scope of an async disposable variable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="instance">The instance that must be disposed when finished.</param>
+        /// <param name="outInstance">The same instance as <paramref name="instance"/>.</param>
+        /// <returns>Returns <paramref name="instance"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IAsyncDisposable AsAsyncDisposable<T>(this T instance, out T outInstance) where T : notnull, IAsyncDisposable
+        {
+            // do not validate instance here, otherwise the jitter will not inline the site.
+
+            outInstance = instance;
+
+            return instance;
+        }
 
         /// <summary>
         /// Creates a wrapper against the provided instance so that it will not be disposed.
