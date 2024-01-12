@@ -170,8 +170,8 @@ namespace Yextly.Common
             else
             {
                 // this is a truncation. Note that truncating the stream has two important side effects:
-                // - cow pages are discarded when they exceed the original stream length (optional, at the moment not implemented)
-                // - new cow pages are allocated to cover the overlap between the new length and the original one in order to disallow reading the old "deleted" data
+                // - CoW pages are discarded when they exceed the original stream length (optional, at the moment not implemented)
+                // - new CoW pages are allocated to cover the overlap between the new length and the original one in order to disallow reading the old "deleted" data
 
                 var firstPageIndex = GetPageIndex(value, out _);
 
