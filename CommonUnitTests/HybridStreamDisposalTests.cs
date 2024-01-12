@@ -100,28 +100,28 @@ namespace CommonUnitTests
         [Fact]
         public async Task CopyToAsync1()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task CopyToAsync2()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task CopyToAsync3()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, default(CancellationToken)).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task CopyToAsync4()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10, default).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -138,7 +138,6 @@ namespace CommonUnitTests
         [Fact]
         public async Task DisposeAsync()
         {
-            using var stream = new MemoryStream();
             await _stream.DisposeAsync().ConfigureAwait(true);
         }
 
@@ -174,14 +173,14 @@ namespace CommonUnitTests
         [Fact]
         public async Task FlushAsync1()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync().ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task FlushAsync2()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync(default).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -222,7 +221,7 @@ namespace CommonUnitTests
         [Fact]
         public async Task ReadAsync1()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync((new byte[10]).AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -230,7 +229,7 @@ namespace CommonUnitTests
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task ReadAsync2()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -238,7 +237,7 @@ namespace CommonUnitTests
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task ReadAsync3()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1, default).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -252,21 +251,21 @@ namespace CommonUnitTests
         [Fact]
         public async Task ReadAtLeastAsync()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAtLeastAsync(new byte[10].AsMemory(), 10).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task ReadAtLeastAsync1()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10].AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task ReadAtLeastAsync2()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10], 0, 10).ConfigureAwait(true)).ConfigureAwait(true);
         }
 #endif
@@ -318,7 +317,7 @@ namespace CommonUnitTests
         [Fact]
         public async Task WriteAsync1()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10].AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -326,7 +325,7 @@ namespace CommonUnitTests
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task WriteAsync2()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
@@ -334,7 +333,7 @@ namespace CommonUnitTests
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task WriteAsync3()
         {
-            using var stream = new MemoryStream();
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5, default).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
