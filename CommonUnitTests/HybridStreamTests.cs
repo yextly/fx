@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using Yextly.Common;
@@ -373,6 +374,64 @@ namespace CommonUnitTests
             _ = dual.Read(t.AsSpan());
         }
 
+        [InlineData(15310, 2451, 3)]
+        [InlineData(15310, 2451, 2)]
+        [InlineData(15310, 2451, 1)]
+        [InlineData(15310, 2451, 0)]
+        [Theory]
+        public void CanReadTheStreamMultipleTimes(int initialSize, int additionalSize, int times)
+        {
+            var buffer = new byte[initialSize];
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = (byte)(i % 255);
+            }
+
+            using var memoryStream = new MemoryStream(buffer, false);
+
+            using var stream = new HybridStream(memoryStream);
+
+            WriteSequentialBytes(stream, initialSize, additionalSize);
+
+            for (int i = 0; i < times; i++)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                Assert.Equal(0, stream.Position);
+
+                AssertSequential(stream, initialSize + additionalSize);
+            }
+        }
+
+        [InlineData(15310, 2451, 3)]
+        [InlineData(15310, 2451, 2)]
+        [InlineData(15310, 2451, 1)]
+        [InlineData(15310, 2451, 0)]
+        [Theory]
+        public async Task CanReadTheStreamMultipleTimesAsync(int initialSize, int additionalSize, int times)
+        {
+            var buffer = new byte[initialSize];
+
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                buffer[i] = (byte)(i % 255);
+            }
+
+            using var memoryStream = new MemoryStream(buffer, false);
+
+            using var stream = new HybridStream(memoryStream);
+
+            await WriteSequentialBytesAsync(stream, initialSize, additionalSize).ConfigureAwait(true);
+
+            for (int i = 0; i < times; i++)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+                Assert.Equal(0, stream.Position);
+
+                await AssertSequentialAsync(stream, initialSize + additionalSize).ConfigureAwait(true);
+            }
+        }
+
         [Fact]
         public void CanReadWithZeroBuffer()
         {
@@ -505,6 +564,43 @@ namespace CommonUnitTests
             Assert.Equal(newLength, actual.Length);
         }
 
+        private static void AssertSequential(Stream source, int expectedLength)
+        {
+            int count = 0;
+
+            int b;
+            while ((b = source.ReadByte()) >= 0)
+            {
+                var expected = (byte)(count % 255);
+                var actual = (byte)b;
+
+                Assert.Equal(expected, actual);
+
+                count++;
+            }
+
+            Assert.Equal(expectedLength, count);
+        }
+
+        private static async Task AssertSequentialAsync(Stream source, int expectedLength)
+        {
+            int count = 0;
+
+            var buffer = new byte[1];
+
+            while ((await source.ReadAsync(buffer).ConfigureAwait(false)) > 0)
+            {
+                var expected = (byte)(count % 255);
+                var actual = buffer[0];
+
+                Assert.Equal(expected, actual);
+
+                count++;
+            }
+
+            Assert.Equal(expectedLength, count);
+        }
+
         private static Random CreateRandom() => new(0);
 
         private static MemoryStream CreateStream(int length, byte seed = 0, bool writable = false)
@@ -530,6 +626,38 @@ namespace CommonUnitTests
             {
                 return new MemoryStream(buffer, false);
             }
+        }
+
+        private static void WriteSequentialBytes(Stream source, int currentLength, int bytesToAdd)
+        {
+            var finalLength = currentLength + bytesToAdd;
+            var buffer = new byte[1];
+
+            source.Seek(0, SeekOrigin.End);
+
+            for (int i = currentLength; i < finalLength; i++)
+            {
+                buffer[0] = (byte)(i % 255);
+                source.Write(buffer);
+            }
+
+            source.Flush();
+        }
+
+        private static async Task WriteSequentialBytesAsync(Stream source, int currentLength, int bytesToAdd)
+        {
+            var finalLength = currentLength + bytesToAdd;
+            var buffer = new byte[1];
+
+            source.Seek(0, SeekOrigin.End);
+
+            for (int i = currentLength; i < finalLength; i++)
+            {
+                buffer[0] = (byte)(i % 255);
+                await source.WriteAsync(buffer).ConfigureAwait(false);
+            }
+
+            await source.FlushAsync().ConfigureAwait(false);
         }
 
         private void CanAppendInternal(int length, int pageSize, int bufferSize, int maxLength, int ioSize, bool setInitialLength, bool march)
