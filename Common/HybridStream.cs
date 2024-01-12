@@ -57,13 +57,13 @@ namespace Yextly.Common
         }
 
         /// <inheritdoc/>
-        public override bool CanRead => _isOpen ? _inner.Value.CanRead : false;
+        public override bool CanRead => _isOpen && _inner.Value.CanRead;
 
         /// <inheritdoc/>
-        public override bool CanSeek => _isOpen ? _inner.Value.CanSeek : false;
+        public override bool CanSeek => _isOpen && _inner.Value.CanSeek;
 
         /// <inheritdoc/>
-        public override bool CanTimeout => _isOpen ? _inner.Value.CanTimeout : false;
+        public override bool CanTimeout => _isOpen && _inner.Value.CanTimeout;
 
         /// <inheritdoc/>
         public override bool CanWrite => _isOpen;
