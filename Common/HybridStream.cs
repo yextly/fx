@@ -21,6 +21,7 @@ namespace Yextly.Common
         private readonly int _pageSize;
         private long _currentLength;
         private long _currentPosition;
+        private bool _isOpen;
 
         /// <summary>
         /// Creates a new <see cref="HybridStream"/> from an existing source.
@@ -50,34 +51,52 @@ namespace Yextly.Common
             _currentLength = _originalLength;
             _pages = [];
             _currentPosition = _inner.Value.Position;
+            _isOpen = true;
 
             EnsureAvailablePagesFor(_currentLength, false);
         }
 
         /// <inheritdoc/>
-        public override bool CanRead => _inner.Value.CanRead;
+        public override bool CanRead => _isOpen ? _inner.Value.CanRead : false;
 
         /// <inheritdoc/>
-        public override bool CanSeek => _inner.Value.CanSeek;
+        public override bool CanSeek => _isOpen ? _inner.Value.CanSeek : false;
 
         /// <inheritdoc/>
-        public override bool CanWrite => true;
+        public override bool CanTimeout => _isOpen ? _inner.Value.CanTimeout : false;
+
+        /// <inheritdoc/>
+        public override bool CanWrite => _isOpen;
 
         /// <inheritdoc/>
         public override long Length => _currentLength;
 
         /// <inheritdoc/>
-        public override long Position { get => _currentPosition; set => SeekInternal(value, SeekOrigin.Begin); }
+        public override long Position
+        {
+            get
+            {
+                return _currentPosition;
+            }
+            set
+            {
+                EnsureOpen();
+                SeekInternal(value, SeekOrigin.Begin);
+            }
+        }
 
         /// <inheritdoc/>
         public override void Flush()
         {
+            EnsureOpen();
+
             _inner.Value.Flush();
         }
 
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
+            EnsureOpen();
             ArgumentNullException.ThrowIfNull(buffer);
 
             var sourceOffset = _currentPosition;
@@ -149,12 +168,15 @@ namespace Yextly.Common
         /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
+            EnsureOpen();
+
             return SeekInternal(offset, origin);
         }
 
         /// <inheritdoc/>
         public override void SetLength(long value)
         {
+            EnsureOpen();
             ArgumentOutOfRangeThrowHelper.ThrowIfNegative(value);
 
             if (value == _currentLength)
@@ -192,6 +214,7 @@ namespace Yextly.Common
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
+            EnsureOpen();
             ArgumentNullException.ThrowIfNull(buffer);
 
             var sourceOffset = _currentPosition;
@@ -258,18 +281,28 @@ namespace Yextly.Common
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
-            using (_inner)
+            try
             {
+                using (_inner)
+                {
+                }
             }
-
-            foreach (var page in _pages)
+            finally
             {
-                if (page != null)
-                    DeallocatePage(page);
-            }
-            _pages.Clear();
+                _isOpen = false;
 
-            base.Dispose(disposing);
+                foreach (var page in _pages)
+                {
+                    if (page != null)
+                        DeallocatePage(page);
+                }
+                _pages.Clear();
+
+                _currentLength = 0;
+                _currentPosition = 0;
+
+                base.Dispose(disposing);
+            }
         }
 
         private static void DeallocatePage(byte[] page)
@@ -323,6 +356,16 @@ namespace Yextly.Common
                     _pages.AddRange(Enumerable.Repeat((byte[]?)null, c));
                 }
             }
+        }
+
+        private void EnsureOpen()
+        {
+#if NET8_0_OR_GREATER
+            ObjectDisposedException.ThrowIf(!_isOpen, this);
+#else
+            if (!_isOpen)
+                throw new ObjectDisposedException(null);
+#endif
         }
 
         private Byte[] GetCoWPage(int index)
