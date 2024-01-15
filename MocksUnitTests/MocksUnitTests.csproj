@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Mocks\Mocks.csproj" />
+		<ProjectReference Include="..\Tasks\Tasks.csproj" />
 		<ProjectReference Include="..\Xunit\Xunit.csproj" />
 	</ItemGroup>
 
