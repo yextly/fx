@@ -32,12 +32,17 @@ namespace Yextly.Testing.Mocks.Http
 
         public IEnumerator<IDisposable> GetEnumerator()
         {
-            return Enumerable.Empty<IDisposable>().GetEnumerator(); 
+            return Enumerable.Empty<IDisposable>().GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return Enumerable.Empty<IDisposable>().GetEnumerator();
         }
 
         public IDisposable[] ToArray()
         {
-            return Array.Empty<IDisposable>();
+            return [];
         }
 
         public bool TryAdd(IDisposable item)
@@ -49,11 +54,6 @@ namespace Yextly.Testing.Mocks.Http
         {
             item = default;
             return false;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return Enumerable.Empty<IDisposable>().GetEnumerator();
         }
     }
 }
