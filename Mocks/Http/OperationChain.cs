@@ -8,13 +8,13 @@ using System.Collections.Concurrent;
 
 namespace Yextly.Testing.Mocks.Http
 {
-    internal sealed class Chain
+    internal sealed class OperationChain
     {
         private readonly ConcurrentQueue<OperationFlow> _operations = new();
 
-        public Chain Clone()
+        public OperationChain Clone()
         {
-            var ret = new Chain();
+            var ret = new OperationChain();
             foreach (var item in _operations)
             {
                 ret.Enqueue(item);

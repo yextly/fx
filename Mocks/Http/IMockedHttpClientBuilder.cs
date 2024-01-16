@@ -12,6 +12,13 @@ namespace Yextly.Testing.Mocks.Http
     public interface IMockedHttpClientBuilder
     {
         /// <summary>
+        /// Configures a builder.
+        /// </summary>
+        /// <param name="configure">The action used for configuring the builder.</param>
+        /// <returns></returns>
+        IMockedHttpClientBuilder Configure(Action<IMockedHttpClientOptions> configure);
+
+        /// <summary>
         /// Creates a sequential expectation. The request is rejected if it does not match the provided <paramref name="method"/> and <paramref name="uri"/>.
         /// </summary>
         /// <param name="method">The HTTP method used for the request.</param>
