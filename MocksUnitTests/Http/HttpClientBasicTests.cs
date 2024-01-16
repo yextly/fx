@@ -68,7 +68,7 @@ namespace MocksUnitTests.Http
             using var content = new StringContent(expectedContent);
 
             builder
-                .Configure(x => x.DefaultAsynchronousDelay = TimeSpan.FromMilliseconds(250))
+                .Configure(x => x.DefaultDelay = TimeSpan.FromMilliseconds(250))
                 .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
                 .Reply(content, HttpStatusCode.OK);
 

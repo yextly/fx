@@ -24,7 +24,7 @@ namespace Yextly.Testing.Mocks.Http
         {
             _options = new()
             {
-                DefaultSynchronousDelay = TimeSpan.FromMilliseconds(100),
+                DefaultDelay = TimeSpan.FromMilliseconds(100),
                 DefaultAsynchronousDelay = TimeSpan.FromMilliseconds(100),
             };
         }
@@ -101,7 +101,7 @@ namespace Yextly.Testing.Mocks.Http
             {
                 Chain = chain,
                 DefaultAsynchronousDelay = _options.DefaultAsynchronousDelay,
-                DefaultSynchronousDelay = _options.DefaultSynchronousDelay,
+                DefaultSynchronousDelay = _options.DefaultDelay,
             };
             return options;
         }

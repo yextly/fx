@@ -12,15 +12,9 @@ namespace Yextly.Testing.Mocks.Http
     public interface IMockedHttpClientOptions
     {
         /// <summary>
-        /// The delay that must be introduced for asynchronous calls.
+        /// The delay that must be introduced for every call.
         /// </summary>
         /// <remarks>The delay is always introduced before evaulating the expections.</remarks>
-        TimeSpan DefaultAsynchronousDelay { get; set; }
-
-        /// <summary>
-        /// The delay that must be introduced for synchronous calls.
-        /// </summary>
-        /// <remarks>The delay is always introduced before evaulating the expections.</remarks>
-        TimeSpan DefaultSynchronousDelay { get; set; }
+        TimeSpan DefaultDelay { get; set; }
     }
 }
