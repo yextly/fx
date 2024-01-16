@@ -11,12 +11,12 @@ namespace Yextly.Testing.Mocks.Http
 {
     internal sealed class MockedHttpClientResponseBuilder : IMockedHttpClientResponseBuilder
     {
-        private readonly Chain _chain;
+        private readonly OperationChain _chain;
         private readonly HttpMethod _method;
         private readonly MockedHttpClientBuilder _owner;
         private readonly Uri _uri;
 
-        public MockedHttpClientResponseBuilder(MockedHttpClientBuilder owner, Chain chain, HttpMethod method, Uri uri)
+        public MockedHttpClientResponseBuilder(MockedHttpClientBuilder owner, OperationChain chain, HttpMethod method, Uri uri)
         {
             ArgumentNullException.ThrowIfNull(owner);
             ArgumentNullException.ThrowIfNull(chain);

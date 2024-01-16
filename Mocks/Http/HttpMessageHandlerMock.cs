@@ -12,31 +12,28 @@ namespace Yextly.Testing.Mocks.Http
 {
     internal sealed partial class MockedHttpMessageHandler : HttpMessageHandler
     {
-        private readonly Chain _chain;
-        private readonly Delays _delays;
+        private readonly MockedHttpClientOptions _options;
         private readonly ILogger _logger;
         private readonly int _handlerId;
         private static int _sharedHandlerId;
         private int _requestId;
 
-        public MockedHttpMessageHandler(ILogger logger, Delays delays, Chain chain)
+        public MockedHttpMessageHandler(ILogger logger, MockedHttpClientOptions options)
         {
             ArgumentNullException.ThrowIfNull(logger);
-            ArgumentNullException.ThrowIfNull(delays);
-            ArgumentNullException.ThrowIfNull(chain);
+            ArgumentNullException.ThrowIfNull(options);
 
             _handlerId = Interlocked.Increment(ref _sharedHandlerId);
 
             _logger = logger;
-            _delays = delays;
-            _chain = chain;
+            _options = options;
         }
 
         protected override HttpResponseMessage Send(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var ret = new HttpResponseMessage();
 
-            var delay = _delays.SyncReplyDelay;
+            var delay = _options.DefaultSynchronousDelay;
 
             if (delay == TimeSpan.Zero)
             {
@@ -52,7 +49,7 @@ namespace Yextly.Testing.Mocks.Http
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var delay = _delays.AsyncReplyDelay;
+            var delay = _options.DefaultAsynchronousDelay;
 
             if (delay == TimeSpan.Zero)
             {
@@ -87,7 +84,7 @@ namespace Yextly.Testing.Mocks.Http
             var actualMethod = request.Method;
             var actualUri = request.RequestUri;
 
-            var next = _chain.DequeueNext();
+            var next = _options.Chain.DequeueNext();
 
             if (next == null)
             {

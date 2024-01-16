@@ -5,9 +5,7 @@
 // ==--==
 
 using Microsoft.Extensions.Logging;
-using System.Collections.Concurrent;
 using Yextly.Common;
-using Yextly.Testing.Mocks.Http;
 
 namespace Yextly.Testing.Mocks.Http
 {
@@ -16,18 +14,18 @@ namespace Yextly.Testing.Mocks.Http
     /// </summary>
     public sealed partial class MockedHttpClientBuilder : IMockedHttpClientBuilder
     {
-        private readonly Chain _chain = new();
-        private readonly Delays _delays;
+        private readonly OperationChain _chain = new();
+        private readonly MutableMockedHttpClientOptions _options;
 
         /// <summary>
         /// Creates a new <see cref="MockedHttpClientBuilder"/> instance.
         /// </summary>
         public MockedHttpClientBuilder()
         {
-            _delays = new Delays
+            _options = new()
             {
-                SyncReplyDelay = TimeSpan.FromMilliseconds(100),
-                AsyncReplyDelay = TimeSpan.FromMilliseconds(100),
+                DefaultSynchronousDelay = TimeSpan.FromMilliseconds(100),
+                DefaultAsynchronousDelay = TimeSpan.FromMilliseconds(100),
             };
         }
 
@@ -42,12 +40,24 @@ namespace Yextly.Testing.Mocks.Http
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(lifetimeContainer);
 
-            var handler = new MockedHttpMessageHandler(logger, _delays, _chain.Clone());
+            var options = CaptureOptions();
 
-            // If the item cannot be added, we could under memory pressure. What do we need to do here?
+            var handler = new MockedHttpMessageHandler(logger, options);
+
+            // If the item cannot be added, we could be under memory pressure. What do we need to do here?
             lifetimeContainer.TryAdd(handler);
 
             return new HttpClient(handler, disposeHandler: false);
+        }
+
+        /// <inheritdoc/>
+        public IMockedHttpClientBuilder Configure(Action<IMockedHttpClientOptions> configure)
+        {
+            ArgumentNullException.ThrowIfNull(configure);
+
+            configure(_options);
+
+            return this;
         }
 
         /// <inheritdoc/>
@@ -76,9 +86,24 @@ namespace Yextly.Testing.Mocks.Http
         {
             ArgumentNullException.ThrowIfNull(logger);
 
-            var handler = new MockedHttpMessageHandler(logger, _delays, _chain.Clone());
+            var options = CaptureOptions();
+
+            var handler = new MockedHttpMessageHandler(logger, options);
 
             return handler;
+        }
+
+        private MockedHttpClientOptions CaptureOptions()
+        {
+            var chain = _chain.Clone();
+
+            var options = new MockedHttpClientOptions
+            {
+                Chain = chain,
+                DefaultAsynchronousDelay = _options.DefaultAsynchronousDelay,
+                DefaultSynchronousDelay = _options.DefaultSynchronousDelay,
+            };
+            return options;
         }
     }
 }

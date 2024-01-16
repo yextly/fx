@@ -59,6 +59,32 @@ namespace MocksUnitTests.Http
         }
 
         [Fact]
+        public async Task CanAcceptAMatchingRequestWithNonStandardDelay()
+        {
+            const string expectedContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis blandit lectus, vel facilisis odio. Morbi gravida non elit ac dignissim. Nullam at massa metus. Aenean euismod ex vitae suscipit cursus. Suspendisse vitae efficitur risus. Ut non leo nulla. Phasellus odio velit, molestie non congue nec, ornare at arcu. Fusce in interdum lectus. Pellentesque pulvinar nunc sagittis nisl porttitor lacinia. Cras quam libero, consectetur sit amet volutpat sed, gravida at turpis. Vivamus at dapibus nisi, non sollicitudin risus.";
+
+            var builder = new MockedHttpClientBuilder();
+
+            using var content = new StringContent(expectedContent);
+
+            builder
+                .Configure(x => x.DefaultAsynchronousDelay = TimeSpan.FromMilliseconds(250))
+                .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
+                .Reply(content, HttpStatusCode.OK);
+
+            using var client = builder.Build(_loggerFactory.CreateLogger<HttpClientBasicTests>(), _garbage);
+
+            var result = await client.GetAsync(new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute)).ConfigureAwait(true);
+
+            Assert.NotNull(result);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+
+            var actualContent = await result.Content.ReadAsStringAsync().ConfigureAwait(true);
+
+            Assert.Equal(expectedContent, actualContent);
+        }
+
+        [Fact]
         public void CanCreateAClient()
         {
             var builder = new MockedHttpClientBuilder();
