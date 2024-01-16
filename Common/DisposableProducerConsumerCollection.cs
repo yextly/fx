@@ -5,13 +5,6 @@
 // ==--==
 
 using System.Collections;
-
-// ==++==
-//
-//   Copyright (c) Shadowsoft Corporation.  All rights reserved.
-//
-// ==--==
-
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
@@ -88,17 +81,16 @@ namespace Yextly.Common
             CollectionUtilities.DisposeInternal(_container, _disposeWithSnapshot, Clean);
         }
 
-        private void Clean()
-        {
-            while (_container.TryTake(out _))
-            {
-            }
-        }
-
         public IEnumerator<TElement> GetEnumerator()
         {
             ObjectDisposedExceptionThrowHelper.ThrowIf(_disposed, this);
             return _container.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            ObjectDisposedExceptionThrowHelper.ThrowIf(_disposed, this);
+            return ((IEnumerable)_container).GetEnumerator();
         }
 
         public TElement[] ToArray()
@@ -119,10 +111,11 @@ namespace Yextly.Common
             return _container.TryTake(out item);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        private void Clean()
         {
-            ObjectDisposedExceptionThrowHelper.ThrowIf(_disposed, this);
-            return ((IEnumerable)_container).GetEnumerator();
+            while (_container.TryTake(out _))
+            {
+            }
         }
     }
 }
