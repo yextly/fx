@@ -11,6 +11,9 @@ using Yextly.Testing.Mocks.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Extension methods to configure an <see cref="IServiceCollection"/> for <see cref="IHttpClientFactory"/> and <see cref="IMockedHttpClientFactory"/>.
+    /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
