@@ -360,12 +360,7 @@ namespace Yextly.Common
 
         private void EnsureOpen()
         {
-#if NET8_0_OR_GREATER
-            ObjectDisposedException.ThrowIf(!_isOpen, this);
-#else
-            if (!_isOpen)
-                throw new ObjectDisposedException(null);
-#endif
+            ObjectDisposedExceptionThrowHelper.ThrowIf(!_isOpen, this);
         }
 
         private Byte[] GetCoWPage(int index)
