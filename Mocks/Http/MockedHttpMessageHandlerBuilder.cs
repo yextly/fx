@@ -8,13 +8,13 @@ using Microsoft.Extensions.Http;
 
 namespace Yextly.Testing.Mocks.Http
 {
-    internal sealed class HttpMessageHandlerBuilderMock : HttpMessageHandlerBuilder
+    internal sealed class MockedHttpMessageHandlerBuilder : HttpMessageHandlerBuilder
     {
         private readonly HttpMessageHandler _handler;
 
         private readonly string _name;
 
-        public HttpMessageHandlerBuilderMock(string name, HttpMessageHandler handler, IServiceProvider serviceProvider) : base()
+        public MockedHttpMessageHandlerBuilder(string name, HttpMessageHandler handler, IServiceProvider serviceProvider) : base()
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(handler);

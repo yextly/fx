@@ -14,15 +14,15 @@ namespace Yextly.Testing.Mocks.Http
     /// <summary>
     /// Provides a builder that allows to mock and provided expectations about an <see cref="HttpClient"/>.
     /// </summary>
-    public sealed partial class HttpClientMockBuilder : IHttpClientMockBuilder
+    public sealed partial class MockedHttpClientBuilder : IMockedHttpClientBuilder
     {
         private readonly Chain _chain = new();
         private readonly Delays _delays;
 
         /// <summary>
-        /// Creates a new <see cref="HttpClientMockBuilder"/> instance.
+        /// Creates a new <see cref="MockedHttpClientBuilder"/> instance.
         /// </summary>
-        public HttpClientMockBuilder()
+        public MockedHttpClientBuilder()
         {
             _delays = new Delays
             {
@@ -42,7 +42,7 @@ namespace Yextly.Testing.Mocks.Http
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(lifetimeContainer);
 
-            var handler = new HttpMessageHandlerMock(logger, _delays, _chain.Clone());
+            var handler = new MockedHttpMessageHandler(logger, _delays, _chain.Clone());
 
             // If the item cannot be added, we could under memory pressure. What do we need to do here?
             lifetimeContainer.TryAdd(handler);
@@ -51,7 +51,7 @@ namespace Yextly.Testing.Mocks.Http
         }
 
         /// <inheritdoc/>
-        public IHttpClientMockResponseBuilder Expect(HttpMethodOperation method, Uri uri)
+        public IMockedHttpClientResponseBuilder Expect(HttpMethodOperation method, Uri uri)
         {
             ArgumentNullException.ThrowIfNull(uri);
 
@@ -69,14 +69,14 @@ namespace Yextly.Testing.Mocks.Http
                 _ => throw new NotSupportedException($@"The value ""{(int)method}"" is not supported."),
             };
 
-            return new HttpClientMockResponseBuilder(this, _chain, m, uri);
+            return new MockedHttpClientResponseBuilder(this, _chain, m, uri);
         }
 
         internal HttpMessageHandler CreateHandler(ILogger logger)
         {
             ArgumentNullException.ThrowIfNull(logger);
 
-            var handler = new HttpMessageHandlerMock(logger, _delays, _chain.Clone());
+            var handler = new MockedHttpMessageHandler(logger, _delays, _chain.Clone());
 
             return handler;
         }

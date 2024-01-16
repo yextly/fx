@@ -9,14 +9,14 @@ using Yextly.Testing.Mocks.Http;
 
 namespace Yextly.Testing.Mocks.Http
 {
-    internal sealed class HttpClientMockResponseBuilder : IHttpClientMockResponseBuilder
+    internal sealed class MockedHttpClientResponseBuilder : IMockedHttpClientResponseBuilder
     {
         private readonly Chain _chain;
         private readonly HttpMethod _method;
-        private readonly HttpClientMockBuilder _owner;
+        private readonly MockedHttpClientBuilder _owner;
         private readonly Uri _uri;
 
-        public HttpClientMockResponseBuilder(HttpClientMockBuilder owner, Chain chain, HttpMethod method, Uri uri)
+        public MockedHttpClientResponseBuilder(MockedHttpClientBuilder owner, Chain chain, HttpMethod method, Uri uri)
         {
             ArgumentNullException.ThrowIfNull(owner);
             ArgumentNullException.ThrowIfNull(chain);
@@ -29,7 +29,7 @@ namespace Yextly.Testing.Mocks.Http
             _uri = uri;
         }
 
-        public IHttpClientMockBuilder Reply(HttpContent content, HttpStatusCode statusCode = HttpStatusCode.OK)
+        public IMockedHttpClientBuilder Reply(HttpContent content, HttpStatusCode statusCode = HttpStatusCode.OK)
         {
             ArgumentNullException.ThrowIfNull(content);
 
@@ -39,7 +39,7 @@ namespace Yextly.Testing.Mocks.Http
             return _owner;
         }
 
-        public IHttpClientMockBuilder Reply(Action<HttpRequestMessage, HttpResponseMessage> action)
+        public IMockedHttpClientBuilder Reply(Action<HttpRequestMessage, HttpResponseMessage> action)
         {
             ArgumentNullException.ThrowIfNull(action);
 

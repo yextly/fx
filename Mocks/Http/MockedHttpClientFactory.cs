@@ -23,7 +23,7 @@ namespace Yextly.Testing.Mocks.Http
         {
         }
 
-        private MockedHttpClientFactory(ILogger logger, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, IEnumerable<HttpClientBuilderBinding> builders)
+        private MockedHttpClientFactory(ILogger logger, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, IEnumerable<MockedHttpClientBuilderBinding> builders)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(optionsMonitor);
@@ -48,10 +48,10 @@ namespace Yextly.Testing.Mocks.Http
             if (finalHandlers.TryGetValue(DefaultHandlerName, out var defaultHandler))
                 _defaultHandler = defaultHandler;
             else
-                _defaultHandler = new HttpClientMockBuilder().CreateHandler(logger);
+                _defaultHandler = new MockedHttpClientBuilder().CreateHandler(logger);
         }
 
-        public static MockedHttpClientFactory Create(ILogger logger, HttpClientMockBuilder defaultClientBuilder, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, params HttpClientBuilderBinding[] builders)
+        public static MockedHttpClientFactory Create(ILogger logger, MockedHttpClientBuilder defaultClientBuilder, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, params MockedHttpClientBuilderBinding[] builders)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(defaultClientBuilder);
@@ -60,7 +60,7 @@ namespace Yextly.Testing.Mocks.Http
             ArgumentNullException.ThrowIfNull(builders);
 
             var finalBuilders = builders
-                .Concat(Enumerable.Repeat(new HttpClientBuilderBinding(DefaultHandlerName, defaultClientBuilder), 1));
+                .Concat(Enumerable.Repeat(new MockedHttpClientBuilderBinding(DefaultHandlerName, defaultClientBuilder), 1));
 
             return new MockedHttpClientFactory(logger, optionsMonitor, serviceProvider, finalBuilders);
         }
@@ -105,9 +105,9 @@ namespace Yextly.Testing.Mocks.Http
             }
         }
 
-        private static IEnumerable<HttpClientBuilderBinding> Convert(IEnumerable<IMockedHttpClientOptions> options)
+        private static IEnumerable<MockedHttpClientBuilderBinding> Convert(IEnumerable<IMockedHttpClientOptions> options)
         {
-            return options.Select(x => new HttpClientBuilderBinding(x.Name, x.Builder));
+            return options.Select(x => new MockedHttpClientBuilderBinding(x.Name, x.Builder));
         }
 
         private HttpMessageHandler CreateFinalHandler(IServiceProvider serviceProvider, string name, HttpMessageHandler innerHandler)
@@ -118,7 +118,7 @@ namespace Yextly.Testing.Mocks.Http
 
             HttpClientFactoryOptions options = _optionsMonitor.Get(name);
 
-            var builder = new HttpMessageHandlerBuilderMock(name, innerHandler, serviceProvider);
+            var builder = new MockedHttpMessageHandlerBuilder(name, innerHandler, serviceProvider);
 
             for (int i = 0; i < options.HttpMessageHandlerBuilderActions.Count; i++)
             {

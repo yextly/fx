@@ -6,9 +6,9 @@
 
 namespace Yextly.Testing.Mocks.Http
 {
-    public readonly record struct HttpClientBuilderBinding
+    public readonly record struct MockedHttpClientBuilderBinding
     {
-        public HttpClientBuilderBinding(string name, HttpClientMockBuilder builder)
+        public MockedHttpClientBuilderBinding(string name, MockedHttpClientBuilder builder)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(builder);
@@ -18,6 +18,6 @@ namespace Yextly.Testing.Mocks.Http
         }
 
         public string Name { get; }
-        public HttpClientMockBuilder Builder { get; }
+        public MockedHttpClientBuilder Builder { get; }
     }
 }

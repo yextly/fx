@@ -10,7 +10,7 @@ using Yextly.Testing.Mocks.Http;
 
 namespace Yextly.Testing.Mocks.Http
 {
-    internal sealed partial class HttpMessageHandlerMock : HttpMessageHandler
+    internal sealed partial class MockedHttpMessageHandler : HttpMessageHandler
     {
         private readonly Chain _chain;
         private readonly Delays _delays;
@@ -19,7 +19,7 @@ namespace Yextly.Testing.Mocks.Http
         private static int _sharedHandlerId;
         private int _requestId;
 
-        public HttpMessageHandlerMock(ILogger logger, Delays delays, Chain chain)
+        public MockedHttpMessageHandler(ILogger logger, Delays delays, Chain chain)
         {
             ArgumentNullException.ThrowIfNull(logger);
             ArgumentNullException.ThrowIfNull(delays);

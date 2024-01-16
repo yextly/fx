@@ -11,7 +11,7 @@ namespace Yextly.Testing.Mocks.Http
     /// <summary>
     /// Provides extension methods to create <see cref="HttpClient"/> instances.
     /// </summary>
-    public static class HttpClientMockBuilderExtensions
+    public static class MockedHttpClientBuilderExtensions
     {
         private static readonly Lazy<LeakingContainer> _leakingContainer = new(() => new LeakingContainer(), LazyThreadSafetyMode.ExecutionAndPublication);
 
@@ -19,7 +19,7 @@ namespace Yextly.Testing.Mocks.Http
         /// Builds a new <see cref="HttpClient"/>.
         /// </summary>
         /// <returns></returns>
-        public static HttpClient Build(this HttpClientMockBuilder instance)
+        public static HttpClient Build(this MockedHttpClientBuilder instance)
         {
             ArgumentNullException.ThrowIfNull(instance);
 
@@ -33,7 +33,7 @@ namespace Yextly.Testing.Mocks.Http
         /// Builds a new <see cref="HttpClient"/>.
         /// </summary>
         /// <returns></returns>
-        public static HttpClient Build(this HttpClientMockBuilder instance, ILogger logger)
+        public static HttpClient Build(this MockedHttpClientBuilder instance, ILogger logger)
         {
             ArgumentNullException.ThrowIfNull(instance);
             ArgumentNullException.ThrowIfNull(logger);

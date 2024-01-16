@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// a named <see cref="HttpClient"/>.
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-        public static IHttpClientMockBuilder AddMockedHttpClient(this IServiceCollection services)
+        public static IMockedHttpClientBuilder AddMockedHttpClient(this IServiceCollection services)
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -47,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <typeparamref name="TClient"/> as the service type.
         /// </para>
         /// </remarks>
-        public static IHttpClientMockBuilder AddMockedHttpClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TClient>(
+        public static IMockedHttpClientBuilder AddMockedHttpClient<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TClient>(
             this IServiceCollection services)
             where TClient : class
         {
@@ -62,12 +62,12 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="name">The logical name of the <see cref="HttpClient"/> to configure.</param>
-        public static IHttpClientMockBuilder AddMockedHttpClient(this IServiceCollection services, string name)
+        public static IMockedHttpClientBuilder AddMockedHttpClient(this IServiceCollection services, string name)
         {
             ArgumentNullException.ThrowIfNull(services);
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
 
-            var builder = new HttpClientMockBuilder();
+            var builder = new MockedHttpClientBuilder();
 
             var options = new MockedHttpClientOptions(name, builder);
 

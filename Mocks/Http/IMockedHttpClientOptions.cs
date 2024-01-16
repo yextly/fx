@@ -8,7 +8,7 @@ namespace Yextly.Testing.Mocks.Http
 {
     public interface IMockedHttpClientOptions
     {
-        HttpClientMockBuilder Builder { get; }
+        MockedHttpClientBuilder Builder { get; }
         string Name { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Yextly.Testing.Mocks.Http
 {
     internal sealed class MockedHttpClientOptions : IMockedHttpClientOptions
     {
-        public MockedHttpClientOptions(string name, HttpClientMockBuilder builder)
+        public MockedHttpClientOptions(string name, MockedHttpClientBuilder builder)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(builder);
@@ -17,7 +17,7 @@ namespace Yextly.Testing.Mocks.Http
             Builder = builder;
         }
 
-        public HttpClientMockBuilder Builder { get; }
+        public MockedHttpClientBuilder Builder { get; }
         public string Name { get; }
     }
 }
