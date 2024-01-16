@@ -96,7 +96,7 @@ namespace Yextly.Common
         public TElement[] ToArray()
         {
             ObjectDisposedExceptionThrowHelper.ThrowIf(_disposed, this);
-            return _container.ToArray();
+            return [.. _container];
         }
 
         public bool TryAdd(TElement item)
