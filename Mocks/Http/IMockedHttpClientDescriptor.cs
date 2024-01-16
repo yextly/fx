@@ -10,7 +10,7 @@ namespace Yextly.Testing.Mocks.Http
     /// Contains options for <see cref="MockedHttpClientBuilder"/>
     /// </summary>
     /// <remarks>This is for internal use only.</remarks>
-    public interface IMockedHttpClientOptions
+    public interface IMockedHttpClientDescriptor
     {
         /// <summary>
         /// References the builder.

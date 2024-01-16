@@ -36,7 +36,7 @@ namespace Yextly.Testing.Mocks.Http
         /// <param name="optionsMonitor"></param>
         /// <param name="serviceProvider"></param>
         /// <param name="options"></param>
-        public MockedHttpClientFactory(ILogger<MockedHttpClientFactory> logger, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, IEnumerable<IMockedHttpClientOptions> options) : this(logger, optionsMonitor, serviceProvider, Convert(options))
+        public MockedHttpClientFactory(ILogger<MockedHttpClientFactory> logger, IOptionsMonitor<HttpClientFactoryOptions> optionsMonitor, IServiceProvider serviceProvider, IEnumerable<IMockedHttpClientDescriptor> options) : this(logger, optionsMonitor, serviceProvider, Convert(options))
         {
         }
 
@@ -132,7 +132,7 @@ namespace Yextly.Testing.Mocks.Http
             }
         }
 
-        private static IEnumerable<MockedHttpClientBuilderBinding> Convert(IEnumerable<IMockedHttpClientOptions> options)
+        private static IEnumerable<MockedHttpClientBuilderBinding> Convert(IEnumerable<IMockedHttpClientDescriptor> options)
         {
             return options.Select(x => new MockedHttpClientBuilderBinding(x.Name, x.Builder));
         }

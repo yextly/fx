@@ -6,9 +6,9 @@
 
 namespace Yextly.Testing.Mocks.Http
 {
-    internal sealed class MockedHttpClientOptions : IMockedHttpClientOptions
+    internal sealed class MockedHttpClientDescriptor : IMockedHttpClientDescriptor
     {
-        public MockedHttpClientOptions(string name, MockedHttpClientBuilder builder)
+        public MockedHttpClientDescriptor(string name, MockedHttpClientBuilder builder)
         {
             ArgumentNullException.ThrowIfNullOrWhiteSpace(name);
             ArgumentNullException.ThrowIfNull(builder);

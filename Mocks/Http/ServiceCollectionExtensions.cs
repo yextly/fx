@@ -72,9 +72,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
             var builder = new MockedHttpClientBuilder();
 
-            var options = new MockedHttpClientOptions(name, builder);
+            var options = new MockedHttpClientDescriptor(name, builder);
 
-            services.AddSingleton<IMockedHttpClientOptions, MockedHttpClientOptions>(_ => options);
+            services.AddSingleton<IMockedHttpClientDescriptor, MockedHttpClientDescriptor>(_ => options);
 
             AddCommonServices(services);
 
