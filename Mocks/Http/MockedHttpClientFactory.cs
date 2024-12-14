@@ -21,7 +21,7 @@ namespace Yextly.Testing.Mocks.Http
     /// by calling <see cref="HttpClientFactoryServiceCollectionExtensions.AddHttpClient(IServiceCollection)"/>.
     /// The default <see cref="IHttpClientFactory"/> will be registered in the service collection as a singleton.
     /// </remarks>
-    public sealed class MockedHttpClientFactory : IMockedHttpClientFactory, IHttpClientFactory, IDisposable
+    public sealed class MockedHttpClientFactory : IMockedHttpClientFactory, IDisposable
     {
         internal static readonly string DefaultHandlerName = typeof(HttpClient).Name;
 
