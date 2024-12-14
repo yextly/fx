@@ -84,7 +84,7 @@ namespace System
         }
 
         /// <summary>
-        /// Checks whether <paramref name="type"/> is a closed generic type definition and returns the first innner type definition.
+        /// Checks whether <paramref name="type"/> is a closed generic type definition and returns the first inner type definition.
         /// </summary>
         /// <param name="type">The type being tested.</param>
         /// <param name="expectedTypeDefinition">The open generic type definition to match.</param>
@@ -108,7 +108,7 @@ namespace System
         }
 
         /// <summary>
-        /// Checks whether <paramref name="type"/> is a closed generic type definition and returns the innner type array definition.
+        /// Checks whether <paramref name="type"/> is a closed generic type definition and returns the inner type array definition.
         /// </summary>
         /// <param name="type">The type being tested.</param>
         /// <param name="expectedTypeDefinition">The open generic type definition to match.</param>
@@ -132,7 +132,7 @@ namespace System
         }
 
         /// <summary>
-        /// Checks whether <paramref name="type"/> is on the form of <see cref="Task{TResult}"/> and returns is innner type definition.
+        /// Checks whether <paramref name="type"/> is on the form of <see cref="Task{TResult}"/> and returns is inner type definition.
         /// </summary>
         /// <param name="type">The type being tested.</param>
         /// <param name="innerType">The inner type extracted by the <see cref="Task{TResult}"/> definition.</param>
