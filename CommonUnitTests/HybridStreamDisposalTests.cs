@@ -178,16 +178,14 @@ namespace CommonUnitTests
         public async Task FlushAsync1()
         {
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await stream.FlushAsync().ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync().ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task FlushAsync2()
         {
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await stream.FlushAsync(default).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync(default).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
