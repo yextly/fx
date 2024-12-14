@@ -24,6 +24,8 @@ namespace CommonUnitTests
                 .Throws<InvalidOperationException>();
 
             using var d = instance.Object.AsNonOwned();
+
+            Assert.NotNull(d);
         }
 
         [Fact]
@@ -32,6 +34,8 @@ namespace CommonUnitTests
             var stream = new FailingStream();
 
             using var s = new UnclosableStream(stream);
+
+            Assert.NotNull(s);
         }
 
         private sealed class FailingStream : MemoryStream
