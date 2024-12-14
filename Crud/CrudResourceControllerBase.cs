@@ -45,9 +45,13 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <param name="entities">The data source as queryable.</param>
         protected CrudResourceControllerBase(ILogger<CrudResourceControllerBase<TInnerEntity, TOuterEntity>> logger, ICrudDataAdapter<TInnerEntity> adapter, IQueryable<TInnerEntity> entities)
         {
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(adapter);
+            ArgumentNullException.ThrowIfNull(entities);
+
             _logger = logger;
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _entities = entities ?? throw new ArgumentNullException(nameof(entities));
+            _adapter = adapter;
+            _entities = entities;
         }
 
         /// <summary>
