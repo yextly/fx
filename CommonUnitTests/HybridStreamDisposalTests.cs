@@ -81,6 +81,7 @@ namespace CommonUnitTests
         public void Close()
         {
             _stream.Close();
+            Assert.NotNull(_stream);
         }
 
         [Fact]
@@ -131,6 +132,7 @@ namespace CommonUnitTests
             {
                 using (_stream)
                 {
+                    // Nothing here on purpose
                 }
             }
         }
@@ -139,6 +141,8 @@ namespace CommonUnitTests
         public async Task DisposeAsync()
         {
             await _stream.DisposeAsync().ConfigureAwait(true);
+
+            Assert.NotNull(_stream);
         }
 
         [Fact]
