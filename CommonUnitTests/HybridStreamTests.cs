@@ -610,7 +610,7 @@ namespace CommonUnitTests
             var s = seed;
             for (int i = 0; i < buffer.Length; i++)
             {
-                buffer[i] = (byte)s;
+                buffer[i] = s;
                 s = (byte)(((int)s + 1) % 255);
             }
 
