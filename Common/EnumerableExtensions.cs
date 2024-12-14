@@ -49,6 +49,7 @@ namespace System.Collections.Generic
         /// <typeparam name="TSource">The type of the elements of <paramref name="source" />.</typeparam>
         /// <param name="source">An <see cref="IEnumerable{T}" /> to return an element from.</param>
         /// <returns></returns>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Blocker Bug", "S2190:Loops and recursions should not be infinite", Justification = "This is the purpose of the method.")]
         public static IEnumerable<TSource> RepeatIndefinitely<TSource>(this IEnumerable<TSource> source)
         {
             ArgumentNullException.ThrowIfNull(source);
