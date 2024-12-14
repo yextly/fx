@@ -127,6 +127,7 @@ namespace Yextly.Testing.Mocks.Http
                 {
                     using (item.Value)
                     {
+                        // Nothing here on purpose
                     }
                 }
             }
