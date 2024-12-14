@@ -3,9 +3,9 @@
         <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     </PropertyGroup>
     <ItemGroup>
-        <PackageVersion Include="coverlet.collector" Version="6.0.0" />
-        <PackageVersion Include="GitInfo" Version="3.3.3" />
-        <PackageVersion Include="Moq" Version="4.20.70" />
+        <PackageVersion Include="coverlet.collector" Version="6.0.2" />
+        <PackageVersion Include="GitInfo" Version="3.5.0" />
+        <PackageVersion Include="Moq" Version="4.20.72" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'" Label="6.0">
         <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
