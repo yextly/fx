@@ -254,7 +254,7 @@ namespace CommonUnitTests
             Assert.Equal(expectedBuffer.AsSpan(0, min).ToArray(), actualBuffer.AsSpan(offset, min).ToArray());
 
             var source = expected == min ? expectedBuffer : actualBuffer;
-            source.AsSpan(0, (int)min).CopyTo(buffer.AsSpan());
+            source.AsSpan(0, min).CopyTo(buffer.AsSpan());
 
             _testOutputHelper.WriteLine("Done reading.");
 
@@ -416,9 +416,11 @@ namespace CommonUnitTests
         {
             using (_expected)
             {
+                // Nothing here on purpose
             }
             using (_actual)
             {
+                // Nothing here on purpose
             }
 
             base.Dispose(disposing);

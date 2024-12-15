@@ -285,6 +285,7 @@ namespace Yextly.Common
             {
                 using (_inner)
                 {
+                    // Nothing on purpose
                 }
             }
             finally

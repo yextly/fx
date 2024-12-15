@@ -45,9 +45,13 @@ namespace Yextly.ServiceFabric.Mvc.Crud
         /// <param name="entities">The data source as queryable.</param>
         protected CrudResourceControllerBase(ILogger<CrudResourceControllerBase<TInnerEntity, TOuterEntity>> logger, ICrudDataAdapter<TInnerEntity> adapter, IQueryable<TInnerEntity> entities)
         {
+            ArgumentNullException.ThrowIfNull(logger);
+            ArgumentNullException.ThrowIfNull(adapter);
+            ArgumentNullException.ThrowIfNull(entities);
+
             _logger = logger;
-            _adapter = adapter ?? throw new ArgumentNullException(nameof(adapter));
-            _entities = entities ?? throw new ArgumentNullException(nameof(entities));
+            _adapter = adapter;
+            _entities = entities;
         }
 
         /// <summary>
@@ -692,7 +696,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
 
         private static IList CreateList(Type propertyType)
         {
-            return (IList)(Activator.CreateInstance(typeof(List<>).MakeGenericType([propertyType])) ?? throw new InvalidOperationException());
+            return (IList)(Activator.CreateInstance(typeof(List<>).MakeGenericType(propertyType)) ?? throw new InvalidOperationException());
         }
 
         private static object? CreateValueForExactMatch(string value, Type propertyType)
@@ -807,6 +811,7 @@ namespace Yextly.ServiceFabric.Mvc.Crud
                 return TypeConverter.ConvertFromObject(value, propertyType);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S6966:Awaitable method should be used", Justification = "This is what we used to do in the past and for now it is contractual.")]
         private async Task<TInnerEntity?> FirstOrDefaultAsync(IQueryable<TInnerEntity> source, Expression<Func<TInnerEntity, bool>> predicate)
         {
             if (_adapter.ProviderType == ProviderType.EntityFramework)

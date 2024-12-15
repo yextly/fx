@@ -12,6 +12,7 @@ namespace CrudUnitTests
 {
     public sealed class ObjectConversionTheoryData : TheoryData<int, object?, Type, object?>
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1905:Redundant casts should not be used", Justification = "This is for readability")]
         public ObjectConversionTheoryData()
         {
             Add(01, 1, typeof(byte), (byte)1);

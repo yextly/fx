@@ -115,6 +115,7 @@ namespace Yextly.Common
         {
             while (_container.TryTake(out _))
             {
+                // Nothing on purpose
             }
         }
     }

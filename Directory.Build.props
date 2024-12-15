@@ -3,9 +3,11 @@
     <PropertyGroup>
         <Company>Yextly Group</Company>
         <Copyright>Copyright © Yextly Group</Copyright>
-        <NoWarn>$(NoWarn);CA1014;CA1812;NU1507</NoWarn>
+        <!-- S125 SonarQube incorrectly detects the banner as code -->
+        <!-- CA1515 .Net 9.0 incorrectly marks xunit tests as unreferenced. xUnit analyzers should suppress it, but it does not work for now -->
+        <NoWarn>$(NoWarn);CA1014;CA1812;NU1507;S125;CA1515</NoWarn>
 
-        <LangVersion>12</LangVersion>
+        <LangVersion>13</LangVersion>
 
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>

@@ -22,6 +22,8 @@ namespace XUnitUnitTests
 
         public LoggerFactory(ITestOutputHelper testOutputHelper)
         {
+            ArgumentNullException.ThrowIfNull(testOutputHelper);
+
             _testOutputHelper = testOutputHelper;
         }
 
@@ -30,7 +32,8 @@ namespace XUnitUnitTests
         {
             using var factory = new XUnitLoggerFactory(_testOutputHelper);
 
-            var _ = factory.CreateLogger<LoggerFactory>();
+            var value = factory.CreateLogger<LoggerFactory>();
+            Assert.NotNull(value);
         }
 
         [Fact]
@@ -89,6 +92,8 @@ namespace XUnitUnitTests
 
             public Actuator(ILogger logger)
             {
+                ArgumentNullException.ThrowIfNull(logger);
+
                 _logger = logger;
             }
 
