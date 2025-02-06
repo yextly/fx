@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0</TargetFrameworks>
+		<Nullable>enable</Nullable>
+		<RootNamespace>Yextly.Scripting.Services.SingleFileApplication</RootNamespace>
+		<AssemblyName>Yextly.Scripting.Services.SingleFileApplication</AssemblyName>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Description>Scripting engine services specifically for single file applications</Description>
+		<Authors>$(Company)</Authors>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<IsPackable>true</IsPackable>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="GitInfo">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\ScriptingAbstractions\ScriptingAbstractions.csproj" />
+	  <ProjectReference Include="..\ScriptingServices\ScriptingServices.csproj" />
+	</ItemGroup>
+
+</Project>
