@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Yextly.Scripting.Abstractions;
 
-namespace ScriptingServicesTests
+namespace ScriptingServicesUnitTests
 {
     public sealed class EngineTests
     {
