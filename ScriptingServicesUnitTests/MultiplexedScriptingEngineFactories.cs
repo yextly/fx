@@ -7,7 +7,7 @@
 using Yextly.Scripting.Abstractions;
 using Yextly.Scripting.Services;
 
-namespace ScriptingServicesTests
+namespace ScriptingServicesUnitTests
 {
     internal sealed class MultiplexedScriptingEngineFactories(ScriptType scriptType) : IScriptingEngineFactories
     {

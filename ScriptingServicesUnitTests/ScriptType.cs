@@ -4,7 +4,7 @@
 //
 // ==--==
 
-namespace ScriptingServicesTests
+namespace ScriptingServicesUnitTests
 {
     public enum ScriptType
     {

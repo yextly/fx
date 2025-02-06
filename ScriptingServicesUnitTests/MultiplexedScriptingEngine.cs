@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Yextly.Scripting.Abstractions;
 
-namespace ScriptingServicesTests
+namespace ScriptingServicesUnitTests
 {
     internal sealed class MultiplexedScriptingEngine(IScriptingEngine inner, ScriptType scriptType) : IScriptingEngine
     {

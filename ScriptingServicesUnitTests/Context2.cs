@@ -4,7 +4,7 @@
 //
 // ==--==
 
-namespace ScriptingServicesTests
+namespace ScriptingServicesUnitTests
 {
     internal sealed class Context2 : IContext2
     {
