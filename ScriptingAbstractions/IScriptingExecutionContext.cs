@@ -23,7 +23,7 @@ namespace Yextly.Scripting.Abstractions
         /// <summary>
         /// The type of <see cref="HostInstance"/>.
         /// </summary>
-        /// <remarks>The type is automatically inferred by the instance passed when bulding the context.</remarks>
+        /// <remarks>The type is automatically inferred by the instance passed when building the context.</remarks>
         Type? HostInstanceType { get; }
 
         /// <summary>
