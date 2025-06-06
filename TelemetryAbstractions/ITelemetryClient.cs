@@ -15,7 +15,7 @@ namespace Yextly.Telemetry.Abstractions
         /// Asynchronously flushes the telemetry buffers.
         /// </summary>
         /// <remarks>You need to manually flush the buffers when the application exits</remarks>
-        /// <param name="cancellationToken">The token to monitor for canceltation requests The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns></returns>
         Task<bool> FlushAsync(CancellationToken cancellationToken = default);
 
