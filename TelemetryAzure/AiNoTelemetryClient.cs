@@ -13,32 +13,38 @@ namespace Yextly.Telemetry.Azure
     /// </summary>
     public sealed class AiNoTelemetryClient : ITelemetryClient
     {
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ITelemetryPropertyBag CreatePropertyBag()
         {
             return new PropertyBag();
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public Task<bool> FlushAsync(CancellationToken cancellationToken = default)
         {
             return Task.FromResult(true);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void TrackEvent(string name, ITelemetryPropertyBag? tags = null)
         {
             // no-op on purpose
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void TrackException(Exception exception, ITelemetryPropertyBag? tags = null)
         {
             // no-op on purpose
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ITelemetryOperation TrackOperation(string operationName, string type)
+        {
+            return new NullOperation();
+        }
+
+        /// <inheritdoc/>
+        public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationid = null)
         {
             return new NullOperation();
         }
