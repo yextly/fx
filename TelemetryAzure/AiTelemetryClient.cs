@@ -106,7 +106,7 @@ namespace Yextly.Telemetry.Azure
                     {
                         // We could crash here when we cannot properly convert the value to a string. This could be due to many factors, the complex nature of
                         // of the object, or simply because there is no built-in conversion.
-                        // Since then the purpose of the telemetry is to aid the user and limit the deleveloper efforts we just ignore it.
+                        // Since then the purpose of the telemetry is to aid the user and limit the developer efforts we just ignore it.
                     }
                 }
             }
