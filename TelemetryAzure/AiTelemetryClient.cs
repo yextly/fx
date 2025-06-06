@@ -47,19 +47,19 @@ namespace Yextly.Telemetry.Azure
 
         internal TelemetryClient InnerClient { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ITelemetryPropertyBag CreatePropertyBag()
         {
             return new AiPropertyBag();
         }
 
-        /// <inheritdoc />
-        public async Task<bool> FlushAsync(CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        public async Task<bool> FlushAsync(CancellationToken cancellationToken = default)
         {
             return await _telemetryClient.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public void TrackEvent(string name, ITelemetryPropertyBag? tags = null)
         {
             var @event = new EventTelemetry(name);
@@ -75,7 +75,7 @@ namespace Yextly.Telemetry.Azure
             _telemetryClient.TrackEvent(@event);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We can't throw here")]
         public void TrackException(Exception exception, ITelemetryPropertyBag? tags = null)
         {
@@ -84,7 +84,9 @@ namespace Yextly.Telemetry.Azure
             Dictionary<string, string>? data = null;
 
             if (tags is AiPropertyBag bag)
+            {
                 data = bag.Data;
+            }
 
             if (exception.Data.Count > 0)
             {
@@ -100,7 +102,9 @@ namespace Yextly.Telemetry.Azure
                         var value = Convert.ToString(item.Value, CultureInfo.InvariantCulture) ?? string.Empty;
 
                         if (key != null)
+                        {
                             data.TryAdd(key, value);
+                        }
                     }
                     catch
                     {
@@ -114,10 +118,19 @@ namespace Yextly.Telemetry.Azure
             _telemetryClient.TrackException(exception, data);
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ITelemetryOperation TrackOperation(string operationName, string type)
         {
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName);
+            operation.Telemetry.Type = type;
+
+            return new AiOperation(this, operation);
+        }
+
+        /// <inheritdoc/>
+        public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationid = null)
+        {
+            var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName, operationId, parentOperationid);
             operation.Telemetry.Type = type;
 
             return new AiOperation(this, operation);
