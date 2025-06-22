@@ -204,8 +204,6 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public void CanDetectErrorsWhenBuildingTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text, ScriptType scriptType)
         {
-            var cancellationToken = _testContextAccessor.Current.CancellationToken;
-
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -236,8 +234,6 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public void CanDetectTrivialScriptErrors(string text, ScriptType scriptType)
         {
-            var cancellationToken = _testContextAccessor.Current.CancellationToken;
-
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
