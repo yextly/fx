@@ -145,7 +145,7 @@ namespace MocksUnitTests.Http
 
             builder
                 .Expect(HttpMethodOperation.Post, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
-                .Reply(static (request, response) =>
+                .Reply(static(request, response) =>
                 {
                     Assert.NotNull(request.Content);
                     var actual = request.Content.ReadAsStringAsync().AsSync();
@@ -171,7 +171,7 @@ namespace MocksUnitTests.Http
         }
 
         [Fact]
-        public async Task UnconfiguredHttpClientResturnsBadGateway()
+        public async Task UnconfiguredHttpClientReturnsBadGateway()
         {
             var builder = new MockedHttpClientBuilder();
 
