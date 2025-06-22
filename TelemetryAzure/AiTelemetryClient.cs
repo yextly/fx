@@ -54,7 +54,7 @@ namespace Yextly.Telemetry.Azure
         }
 
         /// <inheritdoc />
-        public async Task<bool> FlushAsync(CancellationToken cancellationToken)
+        public async Task<bool> FlushAsync(CancellationToken cancellationToken = default)
         {
             return await _telemetryClient.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
@@ -84,7 +84,9 @@ namespace Yextly.Telemetry.Azure
             Dictionary<string, string>? data = null;
 
             if (tags is AiPropertyBag bag)
+            {
                 data = bag.Data;
+            }
 
             if (exception.Data.Count > 0)
             {
@@ -100,13 +102,15 @@ namespace Yextly.Telemetry.Azure
                         var value = Convert.ToString(item.Value, CultureInfo.InvariantCulture) ?? string.Empty;
 
                         if (key != null)
+                        {
                             data.TryAdd(key, value);
+                        }
                     }
                     catch
                     {
                         // We could crash here when we cannot properly convert the value to a string. This could be due to many factors, the complex nature of
                         // of the object, or simply because there is no built-in conversion.
-                        // Since then the purpose of the telemetry is to aid the user and limit the deleveloper efforts we just ignore it.
+                        // Since then the purpose of the telemetry is to aid the user and limit the developer efforts we just ignore it.
                     }
                 }
             }
