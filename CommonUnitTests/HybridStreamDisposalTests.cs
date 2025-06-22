@@ -119,6 +119,7 @@ namespace CommonUnitTests
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task CopyToAsync3()
         {
             var cancellationToken = _testContextAccessor.Current.CancellationToken;
@@ -128,6 +129,7 @@ namespace CommonUnitTests
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task CopyToAsync4()
         {
             var cancellationToken = _testContextAccessor.Current.CancellationToken;
@@ -195,6 +197,7 @@ namespace CommonUnitTests
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task FlushAsync2()
         {
             var cancellationToken = _testContextAccessor.Current.CancellationToken;
@@ -261,6 +264,7 @@ namespace CommonUnitTests
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task ReadAsync3()
         {
             var cancellationToken = _testContextAccessor.Current.CancellationToken;
@@ -329,6 +333,7 @@ namespace CommonUnitTests
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task WriteAsync3()
         {
             var cancellationToken = _testContextAccessor.Current.CancellationToken;
