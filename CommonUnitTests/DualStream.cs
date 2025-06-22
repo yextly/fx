@@ -7,7 +7,6 @@
 using System;
 using System.IO;
 using Xunit;
-using Xunit.Abstractions;
 using Yextly.Common;
 
 namespace CommonUnitTests
@@ -99,9 +98,13 @@ namespace CommonUnitTests
                 Assert.Equal(expected, actual);
 
                 if (expected < 0)
+                {
                     throw new NotSupportedException();
+                }
                 else
+                {
                     return expected;
+                }
             }
         }
 
@@ -133,9 +136,13 @@ namespace CommonUnitTests
                 Assert.Equal(expected, actual);
 
                 if (expected < 0)
+                {
                     throw new NotSupportedException();
+                }
                 else
+                {
                     return expected;
+                }
             }
             set
             {
@@ -213,9 +220,13 @@ namespace CommonUnitTests
             {
                 int newCount;
                 if (actual > 0)
+                {
                     newCount = (int)Math.Min(count, actual);
+                }
                 else
+                {
                     newCount = count;
+                }
 
                 expected = _expected.Value.Read(expectedBuffer, offset, newCount);
                 _testOutputHelper.WriteLine("Read " + expected + " bytes: " + string.Join(", ", expectedBuffer));

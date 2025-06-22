@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using Yextly.Common;
 
 namespace CommonUnitTests
@@ -247,7 +246,9 @@ namespace CommonUnitTests
             {
                 var r = dual.Read(buffer, 0, buffer.Length);
                 if (r == 0)
+                {
                     break;
+                }
             }
         }
 
@@ -282,7 +283,9 @@ namespace CommonUnitTests
             {
                 var r = dual.Read(buffer, 0, buffer.Length);
                 if (r == 0)
+                {
                     break;
+                }
             }
         }
 
@@ -358,7 +361,9 @@ namespace CommonUnitTests
             random.NextBytes(array);
 
             if (finalLength > initialLength)
+            {
                 dual.SetLength(finalLength);
+            }
 
             for (int i = 0; i < operations; i++)
             {
@@ -601,7 +606,10 @@ namespace CommonUnitTests
             Assert.Equal(expectedLength, count);
         }
 
-        private static Random CreateRandom() => new(0);
+        private static Random CreateRandom()
+        {
+            return new(0);
+        }
 
         private static MemoryStream CreateStream(int length, byte seed = 0, bool writable = false)
         {
@@ -674,7 +682,9 @@ namespace CommonUnitTests
             var random = HybridStreamTests.CreateRandom();
 
             if (setInitialLength)
+            {
                 dual.SetLength(maxLength);
+            }
 
             dual.Seek(0, SeekOrigin.End);
 
@@ -716,7 +726,9 @@ namespace CommonUnitTests
                 {
                     var r = dual.Read(buffer, 0, buffer.Length);
                     if (r == 0)
+                    {
                         break;
+                    }
                 }
             }
 
@@ -729,7 +741,9 @@ namespace CommonUnitTests
                 {
                     var r = dual.Read(buffer, 0, buffer.Length);
                     if (r == 0)
+                    {
                         break;
+                    }
                 }
             }
         }

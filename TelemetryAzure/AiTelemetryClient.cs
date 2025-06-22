@@ -53,13 +53,13 @@ namespace Yextly.Telemetry.Azure
             return new AiPropertyBag();
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public async Task<bool> FlushAsync(CancellationToken cancellationToken = default)
         {
             return await _telemetryClient.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void TrackEvent(string name, ITelemetryPropertyBag? tags = null)
         {
             var @event = new EventTelemetry(name);
@@ -75,7 +75,7 @@ namespace Yextly.Telemetry.Azure
             _telemetryClient.TrackEvent(@event);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "We can't throw here")]
         public void TrackException(Exception exception, ITelemetryPropertyBag? tags = null)
         {
@@ -118,7 +118,7 @@ namespace Yextly.Telemetry.Azure
             _telemetryClient.TrackException(exception, data);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public ITelemetryOperation TrackOperation(string operationName, string type)
         {
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName);
@@ -127,7 +127,7 @@ namespace Yextly.Telemetry.Azure
             return new AiOperation(this, operation);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationid = null)
         {
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName, operationId, parentOperationid);

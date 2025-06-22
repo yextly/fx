@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
+		<OutputType>Exe</OutputType>
 		<GenerateDocumentationFile>False</GenerateDocumentationFile>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
@@ -13,7 +14,7 @@
 		<PackageReference Include="Microsoft.Extensions.Http.Polly" />
 		<PackageReference Include="Polly" />
 		<PackageReference Include="Polly.Contrib.WaitAndRetry" />
-		<PackageReference Include="xunit" />
+		<PackageReference Include="xunit.v3" />
 		<PackageReference Include="xunit.runner.visualstudio">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -31,7 +32,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Mocks\Mocks.csproj" />
 		<ProjectReference Include="..\Tasks\Tasks.csproj" />
-		<ProjectReference Include="..\Xunit\Xunit.csproj" />
+		<ProjectReference Include="..\XunitV3\XunitV3.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

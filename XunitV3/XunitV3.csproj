@@ -3,25 +3,29 @@
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
-		<RootNamespace>Yextly.Tasks</RootNamespace>
-		<AssemblyName>Yextly.Tasks</AssemblyName>
+		<RootNamespace>Yextly.Xunit</RootNamespace>
+		<AssemblyName>Yextly.Xunit.v3</AssemblyName>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Description>Threading and task utilities</Description>
+		<Description>XUnit utilities</Description>
 		<Authors>$(Company)</Authors>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="GitInfo">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.ObjectPool" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+		<PackageReference Include="xunit.v3" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+	</ItemGroup>
 </Project>

@@ -14,7 +14,7 @@ namespace CrudUnitTests
     {
         [ClassData(typeof(ObjectConversionTheoryData))]
         [Theory]
-        public void CanConvertFromObject(int id, object input, Type wantedType, object? expected)
+        public void CanConvertFromObject(int id, object? input, Type wantedType, object? expected)
         {
             Assert.True(id > 0);
 

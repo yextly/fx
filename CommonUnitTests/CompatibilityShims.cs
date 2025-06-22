@@ -4,8 +4,8 @@
 //
 // ==--==
 
-using System.Runtime.CompilerServices;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CommonUnitTests
 {
@@ -14,7 +14,7 @@ namespace CommonUnitTests
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IAsyncDisposable AsAsyncDisposable<T>(this T instance, out T outInstance) where T : notnull, IAsyncDisposable
         {
-            // do not validate instance here, otherwise the jitter will not inline the site.
+            // Do not validate instance here, otherwise the jitter will not inline the site.
 
             outInstance = instance;
 

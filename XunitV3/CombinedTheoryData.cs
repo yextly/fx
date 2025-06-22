@@ -20,18 +20,17 @@ namespace Yextly.Xunit
         /// <param name="source">The list of types to handle.</param>
         protected CombinedTheoryData(params Type[] source)
         {
-            _ = source.All(x => typeof(TheoryData).IsAssignableFrom(x));
-            _ = source.All(x => x.GetConstructor(Type.EmptyTypes) != null);
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfZero(source.Length);
 
-            var s = source.Select(x => x.GetConstructor(Type.EmptyTypes)!.Invoke(null)).Cast<TheoryData>().ToList();
+            var data = source.Select(GetTheoryData)
+                .ToList();
 
-            var data = s.ConvertAll(x => x.ToList());
-
-            var offsets = data.Select(x => x.FirstOrDefault()?.Length).Select(x => x ?? 0).ToList();
+            var offsets = ComputeOffsets(data);
 
             var totalSize = offsets.Sum();
 
-            var counter = new Counter(data.Select(x => x.Count).ToArray());
+            var counter = new Counter([.. data.Select(x => x.Count)]);
 
             while (counter.Next())
             {
@@ -43,8 +42,47 @@ namespace Yextly.Xunit
                     offset += offsets[i];
                 }
 
-                AddRow(a);
+                Add(a);
             }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections", Justification = "A naive conversion is less readable")]
+        private static List<int> ComputeOffsets(List<IReadOnlyList<object?[]>> data)
+        {
+            return [..
+                data
+                .Select(x => x.FirstOrDefault()?.Length)
+                .Select(x => x ?? 0)
+                ];
+        }
+
+        private static IReadOnlyList<object?[]> GetTheoryData(Type type)
+        {
+            ArgumentNullException.ThrowIfNull(type);
+
+            var emptyConstructor = type.GetConstructor(Type.EmptyTypes);
+
+            if (!type.IsClass)
+            {
+                throw new ArgumentException($"Type {type.FullName} is not a valid class.", nameof(type));
+            }
+
+            if (emptyConstructor == null)
+            {
+                throw new ArgumentException($"Type {type.FullName} does not have a parameterless constructor.", nameof(type));
+            }
+
+            var instance = emptyConstructor.Invoke(null);
+
+            if (instance is not IEnumerable<ITheoryDataRow> dataRows)
+            {
+                throw new ArgumentException($"Type {type.FullName} does not implement IEnumerable<ITheoryDataRow>.", nameof(type));
+            }
+
+            return [..
+                dataRows
+                .Select(x => x.GetData())
+                ];
         }
 
         internal sealed class Counter

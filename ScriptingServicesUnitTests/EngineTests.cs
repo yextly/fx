@@ -15,6 +15,13 @@ namespace ScriptingServicesUnitTests
 {
     public sealed class EngineTests
     {
+        private readonly ITestContextAccessor _testContextAccessor;
+
+        public EngineTests(ITestContextAccessor testContextAccessor)
+        {
+            _testContextAccessor = testContextAccessor;
+        }
+
         [InlineData(ScriptType.Roslyn)]
         [InlineData(ScriptType.SFA)]
         [Theory]
@@ -30,6 +37,8 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public async Task CanBuildTrivialScripts(string text, int expected, ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -43,7 +52,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.IsType<int>(result);
             Assert.Equal(expected, (int)result!);
@@ -56,6 +65,8 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public async Task CanBuildTrivialScriptsWithHostInstance(string text, int expected, ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -74,7 +85,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.IsType<int>(result);
             Assert.Equal(expected, (int)result!);
@@ -85,6 +96,8 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsings(string text, int expected, ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -105,7 +118,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.IsType<int>(result);
             Assert.Equal(expected, (int)result!);
@@ -120,6 +133,8 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public async Task CanBuildTrivialScriptsWithSeparateAssembliesAndUsingsWithInference(string text, int expected, ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -139,7 +154,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.IsType<int>(result);
             Assert.Equal(expected, (int)result!);
@@ -150,6 +165,8 @@ namespace ScriptingServicesUnitTests
         [Theory]
         public async Task CanBuildTrivialScriptsWithSeparateAssembliesWithMetadataAndUsings(string text, int expected, ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             var factory = GetFactories(scriptType);
 
             var builder = factory.CreateScriptingExecutionContextBuilder();
@@ -172,7 +189,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.IsType<int>(result);
             Assert.Equal(expected, (int)result!);
@@ -238,8 +255,10 @@ namespace ScriptingServicesUnitTests
         [InlineData(ScriptType.Roslyn)]
         [InlineData(ScriptType.SFA)]
         [Theory]
-        public async Task CanRunAScriptWithSideEffectsReturingVoid(ScriptType scriptType)
+        public async Task CanRunAScriptWithSideEffectsReturningVoid(ScriptType scriptType)
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             const string text = @"var a = 15;
                 var b = 20;
                 SideEffect1(a + b);
@@ -266,7 +285,7 @@ namespace ScriptingServicesUnitTests
             var e = engine.CreateScript(context, text);
             Assert.NotNull(e);
 
-            var result = await engine.RunScriptAsync(e).ConfigureAwait(true);
+            var result = await engine.RunScriptAsync(e, cancellationToken).ConfigureAwait(true);
 
             Assert.Null(result);
 
@@ -274,6 +293,9 @@ namespace ScriptingServicesUnitTests
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1859:Use concrete types when possible for improved performance", Justification = "We need the interface")]
-        private static IScriptingEngineFactories GetFactories(ScriptType scriptType) => new MultiplexedScriptingEngineFactories(scriptType);
+        private static IScriptingEngineFactories GetFactories(ScriptType scriptType)
+        {
+            return new MultiplexedScriptingEngineFactories(scriptType);
+        }
     }
 }

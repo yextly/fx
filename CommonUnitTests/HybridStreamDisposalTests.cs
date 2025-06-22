@@ -7,7 +7,6 @@
 using Moq;
 using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Yextly.Common;
@@ -18,9 +17,12 @@ namespace CommonUnitTests
     {
         private readonly MemoryStream _memoryStream;
         private readonly HybridStream _stream;
+        private readonly ITestContextAccessor _testContextAccessor;
 
-        public HybridStreamDisposalTests()
+        public HybridStreamDisposalTests(ITestContextAccessor testContextAccessor)
         {
+            _testContextAccessor = testContextAccessor;
+
             _memoryStream = new();
             _memoryStream.WriteByte(0);
             _memoryStream.WriteByte(1);
@@ -101,29 +103,39 @@ namespace CommonUnitTests
         [Fact]
         public async Task CopyToAsync1()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         public async Task CopyToAsync2()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task CopyToAsync3()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, default(CancellationToken)).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task CopyToAsync4()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10, default).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.CopyToAsync(stream, 10, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         public void Dispose()
@@ -151,7 +163,7 @@ namespace CommonUnitTests
             var result = new Mock<IAsyncResult>();
 
             // Note that this is not really a test, since we should offer a real AsyncResult instance,
-            // however, that would call the internal read methods, therefore the effect wuld be the same.
+            // however, that would call the internal read methods, therefore the effect would be the same.
             // The test here to signal that we have not forgotten any entries to test.
             Assert.ThrowsAny<ArgumentException>(() => _stream.EndRead(result.Object));
         }
@@ -162,7 +174,7 @@ namespace CommonUnitTests
             var result = new Mock<IAsyncResult>();
 
             // Note that this is not really a test, since we should offer a real AsyncResult instance,
-            // however, that would call the internal read methods, therefore the effect wuld be the same.
+            // however, that would call the internal read methods, therefore the effect would be the same.
             // The test here to signal that we have not forgotten any entries to test.
             Assert.ThrowsAny<ArgumentException>(() => _stream.EndWrite(result.Object));
         }
@@ -177,17 +189,22 @@ namespace CommonUnitTests
         [Fact]
         public async Task FlushAsync1()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync().ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync(cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task FlushAsync2()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync(default).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<ObjectDisposedException>(async () => await _stream.FlushAsync(cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
@@ -227,74 +244,41 @@ namespace CommonUnitTests
         [Fact]
         public async Task ReadAsync1()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync((new byte[10]).AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync((new byte[10]).AsMemory(), cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task ReadAsync2()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task ReadAsync3()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1, default).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync(new byte[10], 2, 1, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
-
-#if NET8_0_OR_GREATER
-        [Fact]
-        public void ReadAtLeast()
-        {
-            Assert.ThrowsAny<ObjectDisposedException>(() => _ = _stream.ReadAtLeast(new byte[10].AsSpan(), 4));
-        }
-
-        [Fact]
-        public async Task ReadAtLeastAsync()
-        {
-            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAtLeastAsync(new byte[10].AsMemory(), 10).ConfigureAwait(true)).ConfigureAwait(true);
-        }
-
-        [Fact]
-        public async Task ReadAtLeastAsync1()
-        {
-            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10].AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
-        }
-
-        [Fact]
-        public async Task ReadAtLeastAsync2()
-        {
-            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
-            Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10], 0, 10).ConfigureAwait(true)).ConfigureAwait(true);
-        }
-#endif
 
         [Fact]
         public void ReadByte()
         {
             Assert.ThrowsAny<ObjectDisposedException>(() => _ = _stream.ReadByte());
         }
-
-#if NET8_0_OR_GREATER
-        [Fact]
-        public void ReadExactly()
-        {
-            Assert.ThrowsAny<ObjectDisposedException>(() => _stream.ReadExactly(new byte[10].AsSpan()));
-        }
-#endif
 
         [Fact]
         public void ReadTimeout()
@@ -329,27 +313,34 @@ namespace CommonUnitTests
         [Fact]
         public async Task WriteAsync1()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10].AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10].AsMemory(), cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
         public async Task WriteAsync2()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1835:Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'", Justification = "We need to test all methods here")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "It is targeting an overload")]
         public async Task WriteAsync3()
         {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5, default).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.WriteAsync(new byte[10], 0, 5, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
@@ -363,5 +354,51 @@ namespace CommonUnitTests
         {
             Assert.ThrowsAny<InvalidOperationException>(() => _ = _stream.WriteTimeout);
         }
+
+#if NET8_0_OR_GREATER
+        [Fact]
+        public void ReadAtLeast()
+        {
+            Assert.ThrowsAny<ObjectDisposedException>(() => _ = _stream.ReadAtLeast(new byte[10].AsSpan(), 4));
+        }
+
+        [Fact]
+        public async Task ReadAtLeastAsync()
+        {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
+            Assert.NotNull(stream);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAtLeastAsync(new byte[10].AsMemory(), 10, cancellationToken: cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
+        }
+
+        [Fact]
+        public async Task ReadAtLeastAsync1()
+        {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
+            Assert.NotNull(stream);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10].AsMemory(), cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
+        }
+
+        [Fact]
+        public async Task ReadAtLeastAsync2()
+        {
+            var cancellationToken = _testContextAccessor.Current.CancellationToken;
+
+            await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
+            Assert.NotNull(stream);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10], 0, 10, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
+        }
+#endif
+
+#if NET8_0_OR_GREATER
+        [Fact]
+        public void ReadExactly()
+        {
+            Assert.ThrowsAny<ObjectDisposedException>(() => _stream.ReadExactly(new byte[10].AsSpan()));
+        }
+#endif
     }
 }

@@ -7,7 +7,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Polly;
-using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
 using System;
 using System.Collections.Concurrent;
@@ -17,9 +16,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using Yextly.Common;
-using Yextly.Tasks;
 using Yextly.Testing.Mocks.Http;
 using Yextly.Xunit.Testing;
 
@@ -27,14 +24,18 @@ namespace MocksUnitTests.Http
 {
     public sealed class HttpClientFactoryBasicTests : IDisposable
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is a test")]
+        private const string TestUri = "https://www.website1.blackhole/test.php?q=123";
+
         private readonly IDisposableProducerConsumerCollection<IDisposable> _garbage;
         private readonly XUnitLoggerFactory _loggerFactory;
-        private readonly ITestOutputHelper _testOutputHelper;
+        private readonly ITestContextAccessor _testContextAccessor;
 
-        public HttpClientFactoryBasicTests(ITestOutputHelper testOutputHelper)
+        public HttpClientFactoryBasicTests(ITestOutputHelper testOutputHelper, ITestContextAccessor testContextAccessor)
         {
-            _testOutputHelper = testOutputHelper;
-            _loggerFactory = new XUnitLoggerFactory(_testOutputHelper);
+            _testContextAccessor = testContextAccessor;
+
+            _loggerFactory = new XUnitLoggerFactory(testOutputHelper);
             _garbage = new ConcurrentBag<IDisposable>().AsDisposableCollection();
         }
 
@@ -42,6 +43,8 @@ namespace MocksUnitTests.Http
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Not necessary")]
         public async Task CanAcceptAMatchingRequest()
         {
+            var cancelationToken = _testContextAccessor.Current.CancellationToken;
+
             const string expectedContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis blandit lectus, vel facilisis odio. Morbi gravida non elit ac dignissim. Nullam at massa metus. Aenean euismod ex vitae suscipit cursus. Suspendisse vitae efficitur risus. Ut non leo nulla. Phasellus odio velit, molestie non congue nec, ornare at arcu. Fusce in interdum lectus. Pellentesque pulvinar nunc sagittis nisl porttitor lacinia. Cras quam libero, consectetur sit amet volutpat sed, gravida at turpis. Vivamus at dapibus nisi, non sollicitudin risus.";
 
             using var content = new StringContent(expectedContent);
@@ -51,22 +54,22 @@ namespace MocksUnitTests.Http
             var timeout = TimeSpan.FromSeconds(30);
 
             collection.AddMockedHttpClient("Client1")
-                .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
+                .Expect(HttpMethodOperation.Get, new Uri(TestUri, UriKind.Absolute))
                 .Reply(content, HttpStatusCode.OK);
 
             collection.AddHttpClient("Client1")
                 .AddPolicyHandler((serviceProvider, _) =>
                     HttpPolicyExtensions.HandleTransientHttpError()
-                        .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
-                        {
-                            var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
+                    .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
+                                                       {
+                                                           var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
 
-                            var message = outcome?.Exception?.Message ?? "No message available";
-                            var result = outcome?.Result?.StatusCode;
-                            var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
+                                                           var message = outcome?.Exception?.Message ?? "No message available";
+                                                           var result = outcome?.Result?.StatusCode;
+                                                           var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
 
-                            logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
-                        }))
+                                                           logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
+                                                       }))
                 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(timeout));
 
             using var provider = collection.BuildServiceProvider();
@@ -77,12 +80,12 @@ namespace MocksUnitTests.Http
             var factory = services.GetRequiredService<IHttpClientFactory>();
             using var client = factory.CreateClient("Client1");
 
-            var result = await client.GetAsync(new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute)).ConfigureAwait(true);
+            var result = await client.GetAsync(new Uri(TestUri, UriKind.Absolute), cancelationToken).ConfigureAwait(true);
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var actualContent = await result.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var actualContent = await result.Content.ReadAsStringAsync(cancelationToken).ConfigureAwait(true);
 
             Assert.Equal(expectedContent, actualContent);
         }
@@ -91,6 +94,8 @@ namespace MocksUnitTests.Http
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Not necessary")]
         public async Task CanAcceptAMatchingRequestFromDefaultClient()
         {
+            var cancelationToken = _testContextAccessor.Current.CancellationToken;
+
             const string expectedContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis blandit lectus, vel facilisis odio. Morbi gravida non elit ac dignissim. Nullam at massa metus. Aenean euismod ex vitae suscipit cursus. Suspendisse vitae efficitur risus. Ut non leo nulla. Phasellus odio velit, molestie non congue nec, ornare at arcu. Fusce in interdum lectus. Pellentesque pulvinar nunc sagittis nisl porttitor lacinia. Cras quam libero, consectetur sit amet volutpat sed, gravida at turpis. Vivamus at dapibus nisi, non sollicitudin risus.";
 
             using var content = new StringContent(expectedContent);
@@ -100,22 +105,22 @@ namespace MocksUnitTests.Http
             var timeout = TimeSpan.FromSeconds(30);
 
             collection.AddMockedHttpClient()
-                .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
+                .Expect(HttpMethodOperation.Get, new Uri(TestUri, UriKind.Absolute))
                 .Reply(content, HttpStatusCode.OK);
 
             collection.AddHttpClient<HttpClient>()
                 .AddPolicyHandler((serviceProvider, _) =>
                     HttpPolicyExtensions.HandleTransientHttpError()
-                        .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
-                        {
-                            var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
+                    .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
+                                                       {
+                                                           var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
 
-                            var message = outcome?.Exception?.Message ?? "No message available";
-                            var result = outcome?.Result?.StatusCode;
-                            var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
+                                                           var message = outcome?.Exception?.Message ?? "No message available";
+                                                           var result = outcome?.Result?.StatusCode;
+                                                           var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
 
-                            logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
-                        }))
+                                                           logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
+                                                       }))
                 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(timeout));
 
             using var provider = collection.BuildServiceProvider();
@@ -126,12 +131,12 @@ namespace MocksUnitTests.Http
             var factory = services.GetRequiredService<IHttpClientFactory>();
             using var client = factory.CreateClient("Client1");
 
-            var result = await client.GetAsync(new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute)).ConfigureAwait(true);
+            var result = await client.GetAsync(new Uri(TestUri, UriKind.Absolute), cancelationToken).ConfigureAwait(true);
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-            var actualContent = await result.Content.ReadAsStringAsync().ConfigureAwait(true);
+            var actualContent = await result.Content.ReadAsStringAsync(cancelationToken).ConfigureAwait(true);
 
             Assert.Equal(expectedContent, actualContent);
         }
@@ -140,6 +145,8 @@ namespace MocksUnitTests.Http
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Not necessary")]
         public async Task CanRejectUnknownDefaultClient()
         {
+            var cancelationToken = _testContextAccessor.Current.CancellationToken;
+
             const string expectedContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis blandit lectus, vel facilisis odio. Morbi gravida non elit ac dignissim. Nullam at massa metus. Aenean euismod ex vitae suscipit cursus. Suspendisse vitae efficitur risus. Ut non leo nulla. Phasellus odio velit, molestie non congue nec, ornare at arcu. Fusce in interdum lectus. Pellentesque pulvinar nunc sagittis nisl porttitor lacinia. Cras quam libero, consectetur sit amet volutpat sed, gravida at turpis. Vivamus at dapibus nisi, non sollicitudin risus.";
 
             using var content = new StringContent(expectedContent);
@@ -149,22 +156,22 @@ namespace MocksUnitTests.Http
             var timeout = TimeSpan.FromSeconds(30);
 
             collection.AddMockedHttpClient("Client1")
-                .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
+                .Expect(HttpMethodOperation.Get, new Uri(TestUri, UriKind.Absolute))
                 .Reply(content, HttpStatusCode.OK);
 
             collection.AddHttpClient("Client1")
                 .AddPolicyHandler((serviceProvider, _) =>
                     HttpPolicyExtensions.HandleTransientHttpError()
-                        .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
-                        {
-                            var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
+                    .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
+                                                       {
+                                                           var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
 
-                            var message = outcome?.Exception?.Message ?? "No message available";
-                            var result = outcome?.Result?.StatusCode;
-                            var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
+                                                           var message = outcome?.Exception?.Message ?? "No message available";
+                                                           var result = outcome?.Result?.StatusCode;
+                                                           var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
 
-                            logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
-                        }))
+                                                           logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
+                                                       }))
                 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(timeout));
 
             using var provider = collection.BuildServiceProvider();
@@ -175,7 +182,7 @@ namespace MocksUnitTests.Http
             var factory = services.GetRequiredService<IHttpClientFactory>();
             using var client = factory.CreateClient();
 
-            var result = await client.GetAsync(new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute)).ConfigureAwait(true);
+            var result = await client.GetAsync(new Uri(TestUri, UriKind.Absolute), cancelationToken).ConfigureAwait(true);
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.BadGateway, result.StatusCode);
@@ -185,6 +192,8 @@ namespace MocksUnitTests.Http
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1848:Use the LoggerMessage delegates", Justification = "Not necessary")]
         public async Task CanRejectUnknownNamedClients()
         {
+            var cancelationToken = _testContextAccessor.Current.CancellationToken;
+
             const string expectedContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis blandit lectus, vel facilisis odio. Morbi gravida non elit ac dignissim. Nullam at massa metus. Aenean euismod ex vitae suscipit cursus. Suspendisse vitae efficitur risus. Ut non leo nulla. Phasellus odio velit, molestie non congue nec, ornare at arcu. Fusce in interdum lectus. Pellentesque pulvinar nunc sagittis nisl porttitor lacinia. Cras quam libero, consectetur sit amet volutpat sed, gravida at turpis. Vivamus at dapibus nisi, non sollicitudin risus.";
 
             using var content = new StringContent(expectedContent);
@@ -194,22 +203,22 @@ namespace MocksUnitTests.Http
             var timeout = TimeSpan.FromSeconds(30);
 
             collection.AddMockedHttpClient("Client1")
-                .Expect(HttpMethodOperation.Get, new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute))
+                .Expect(HttpMethodOperation.Get, new Uri(TestUri, UriKind.Absolute))
                 .Reply(content, HttpStatusCode.OK);
 
             collection.AddHttpClient("Client1")
                 .AddPolicyHandler((serviceProvider, _) =>
                     HttpPolicyExtensions.HandleTransientHttpError()
-                        .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
-                        {
-                            var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
+                    .WaitAndRetryAsync(GetIntervals(), onRetry: (outcome, sleepDuration, attemptNumber, _) =>
+                                                       {
+                                                           var logger = serviceProvider.GetRequiredService<ILogger<HttpClient>>();
 
-                            var message = outcome?.Exception?.Message ?? "No message available";
-                            var result = outcome?.Result?.StatusCode;
-                            var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
+                                                           var message = outcome?.Exception?.Message ?? "No message available";
+                                                           var result = outcome?.Result?.StatusCode;
+                                                           var resultMessage = result == null ? "Not available" : Enum.GetName<HttpStatusCode>((HttpStatusCode)result) ?? "Unknown result";
 
-                            logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
-                        }))
+                                                           logger.LogWarning(outcome?.Exception, "HTTP transient error {Message}, result {Result}, retrying in {Interval}. This is attempt {Number}.", message, resultMessage, sleepDuration, attemptNumber);
+                                                       }))
                 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(timeout));
 
             using var provider = collection.BuildServiceProvider();
@@ -220,7 +229,7 @@ namespace MocksUnitTests.Http
             var factory = services.GetRequiredService<IHttpClientFactory>();
             using var client = factory.CreateClient("Client2");
 
-            var result = await client.GetAsync(new Uri("https://www.website1.blackhole/test.php?q=123", UriKind.Absolute)).ConfigureAwait(true);
+            var result = await client.GetAsync(new Uri(TestUri, UriKind.Absolute), cancelationToken).ConfigureAwait(true);
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.BadGateway, result.StatusCode);
