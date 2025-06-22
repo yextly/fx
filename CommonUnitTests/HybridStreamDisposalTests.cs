@@ -245,7 +245,7 @@ namespace CommonUnitTests
 
             await using var disposableStream = new MemoryStream().AsAsyncDisposable(out var stream).ConfigureAwait(true);
             Assert.NotNull(stream);
-            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync((new byte[10], cancellationToken: cancellationToken).AsMemory()).ConfigureAwait(true)).ConfigureAwait(true);
+            await Assert.ThrowsAnyAsync<NotSupportedException>(async () => _ = await _stream.ReadAsync((new byte[10]).AsMemory(), cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
 
         [Fact]
