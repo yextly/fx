@@ -20,17 +20,13 @@ namespace Yextly.Xunit
         /// <param name="source">The list of types to handle.</param>
         protected CombinedTheoryData(params Type[] source)
         {
-            //// This is a remnant of the original code, but it seems has no side effect and is not used for validation as it should be.
-            //// We need to dig a little bit here.
-            //_ = source.All(x => typeof(TheoryData).IsAssignableFrom(x));
-            //_ = source.All(x => x.GetConstructor(Type.EmptyTypes) != null);
+            ArgumentNullException.ThrowIfNull(source);
+            ArgumentOutOfRangeException.ThrowIfZero(source.Length);
 
             var data = source.Select(GetTheoryData)
                 .ToList();
 
-            var offsets = data.Select(x => x.FirstOrDefault()?.Length)
-                .Select(x => x ?? 0)
-                .ToList();
+            var offsets = ComputeOffsets(data);
 
             var totalSize = offsets.Sum();
 
@@ -50,16 +46,27 @@ namespace Yextly.Xunit
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1826:Do not use Enumerable methods on indexable collections", Justification = "A naive conversion is less readable")]
+        private static List<int> ComputeOffsets(List<IReadOnlyList<object?[]>> data)
+        {
+            return [..
+                data
+                .Select(x => x.FirstOrDefault()?.Length)
+                .Select(x => x ?? 0)
+                ];
+        }
+
         private static IReadOnlyList<object?[]> GetTheoryData(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
+
+            var emptyConstructor = type.GetConstructor(Type.EmptyTypes);
 
             if (!type.IsClass)
             {
                 throw new ArgumentException($"Type {type.FullName} is not a valid class.", nameof(type));
             }
 
-            var emptyConstructor = type.GetConstructor(Type.EmptyTypes);
             if (emptyConstructor == null)
             {
                 throw new ArgumentException($"Type {type.FullName} does not have a parameterless constructor.", nameof(type));
@@ -72,9 +79,10 @@ namespace Yextly.Xunit
                 throw new ArgumentException($"Type {type.FullName} does not implement IEnumerable<ITheoryDataRow>.", nameof(type));
             }
 
-            return dataRows
+            return [..
+                dataRows
                 .Select(x => x.GetData())
-                .ToList();
+                ];
         }
 
         internal sealed class Counter

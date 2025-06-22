@@ -40,8 +40,7 @@ namespace XUnitV3UnitTests
 
         public void Write(string format, params object[] args)
         {
-            var t = string.Format(CultureInfo.InvariantCulture, format, args);
-            Interlocked.Exchange(ref _current, t);
+            WriteLine(format, args);
         }
 
         public void WriteLine(string message)
