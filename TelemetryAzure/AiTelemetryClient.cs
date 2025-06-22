@@ -47,7 +47,7 @@ namespace Yextly.Telemetry.Azure
 
         internal TelemetryClient InnerClient { get; }
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         public ITelemetryPropertyBag CreatePropertyBag()
         {
             return new AiPropertyBag();
@@ -122,6 +122,15 @@ namespace Yextly.Telemetry.Azure
         public ITelemetryOperation TrackOperation(string operationName, string type)
         {
             var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName);
+            operation.Telemetry.Type = type;
+
+            return new AiOperation(this, operation);
+        }
+
+        /// <inheritdoc />
+        public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationid = null)
+        {
+            var operation = _telemetryClient.StartOperation<DependencyTelemetry>(operationName, operationId, parentOperationid);
             operation.Telemetry.Type = type;
 
             return new AiOperation(this, operation);
