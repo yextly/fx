@@ -19,6 +19,7 @@ namespace Yextly.Xunit.Testing
     {
         private static readonly Lazy<ObjectPool<StringBuilder>> _pool = new(InitializePool, LazyThreadSafetyMode.PublicationOnly);
         private readonly string _categoryName;
+        private readonly XUnitLoggerDiagnosticInfo _diagnosticInfo;
         private readonly LoggerExternalScopeProvider _scopeProvider;
         private readonly ITestOutputHelper _testOutputHelper;
 
@@ -28,15 +29,24 @@ namespace Yextly.Xunit.Testing
         /// <param name="testOutputHelper">The test output to write to.</param>
         /// <param name="scopeProvider">The scope provider to integrate the logs with.</param>
         /// <param name="categoryName">Specifies the category of this logger.</param>
-        public XUnitLogger(ITestOutputHelper testOutputHelper, LoggerExternalScopeProvider scopeProvider, string categoryName)
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
+        public XUnitLogger(ITestOutputHelper testOutputHelper, LoggerExternalScopeProvider scopeProvider, string categoryName, XUnitLoggerDiagnosticInfo diagnosticInfo)
         {
             ArgumentNullException.ThrowIfNull(testOutputHelper);
             ArgumentNullException.ThrowIfNull(scopeProvider);
             ArgumentNullException.ThrowIfNull(categoryName);
+            ArgumentNullException.ThrowIfNull(diagnosticInfo);
 
             _testOutputHelper = testOutputHelper;
             _scopeProvider = scopeProvider;
             _categoryName = categoryName;
+            _diagnosticInfo = diagnosticInfo;
+        }
+
+        /// <inheritdoc />
+        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
+        {
+            return _scopeProvider.Push(state);
         }
 
         /// <inheritdoc />
@@ -85,6 +95,15 @@ namespace Yextly.Xunit.Testing
                 _testOutputHelper.WriteLine(sb.ToString());
                 Debug.WriteLine(sb.ToString());
             }
+            catch (Exception ex)
+            {
+                var builder = new StringBuilder();
+                builder.AppendLine("Failed to dispatch a log to the inner log provider.");
+                builder.AppendLine("Follows the logger diagnostic inforation:");
+                builder.AppendLine(LoggerDiagnostics.GetDiagnosticInformation(_diagnosticInfo));
+
+                throw new InvalidOperationException(builder.ToString(), ex);
+            }
             finally
             {
                 pool.Return(sb);
@@ -111,19 +130,5 @@ namespace Yextly.Xunit.Testing
             var policy = new StringBuilderPooledObjectPolicy();
             return provider.Create(policy);
         }
-
-#if NET6_0
-
-        /// <inheritdoc/>
-        public IDisposable BeginScope<TState>(TState state) => _scopeProvider.Push(state);
-
-#elif NET7_0_OR_GREATER
-
-        /// <inheritdoc />
-        public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-        {
-            return _scopeProvider.Push(state);
-        }
-#endif
     }
 }

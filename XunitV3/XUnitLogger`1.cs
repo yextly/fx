@@ -16,7 +16,8 @@ namespace Yextly.Xunit.Testing
         /// Creates a new <see cref="XUnitLogger" /> instance with default values.
         /// </summary>
         /// <param name="testOutputHelper">The test output to write to.</param>
-        public XUnitLogger(ITestOutputHelper testOutputHelper) : base(testOutputHelper, new LoggerExternalScopeProvider(), typeof(T).FullName ?? "<unknown>")
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
+        public XUnitLogger(ITestOutputHelper testOutputHelper, XUnitLoggerDiagnosticInfo diagnosticInfo) : base(testOutputHelper, new LoggerExternalScopeProvider(), typeof(T).FullName ?? "<unknown>", diagnosticInfo)
         {
         }
 
@@ -25,7 +26,8 @@ namespace Yextly.Xunit.Testing
         /// </summary>
         /// <param name="testOutputHelper">The test output to write to.</param>
         /// <param name="scopeProvider">The scope provider to use.</param>
-        public XUnitLogger(ITestOutputHelper testOutputHelper, LoggerExternalScopeProvider scopeProvider) : base(testOutputHelper, scopeProvider, typeof(T).FullName ?? "<unknown>")
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
+        public XUnitLogger(ITestOutputHelper testOutputHelper, LoggerExternalScopeProvider scopeProvider, XUnitLoggerDiagnosticInfo diagnosticInfo) : base(testOutputHelper, scopeProvider, typeof(T).FullName ?? "<unknown>", diagnosticInfo)
         {
         }
     }

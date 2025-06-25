@@ -15,6 +15,7 @@ namespace Yextly.Xunit.Testing
     /// </summary>
     public sealed class XUnitLoggerFactory : ILoggerFactory
     {
+        private readonly XUnitLoggerDiagnosticInfo _diagnosticInfo;
         private readonly ITestOutputHelper _outputHelper;
 
         /// <summary>
@@ -25,6 +26,21 @@ namespace Yextly.Xunit.Testing
         {
             ArgumentNullException.ThrowIfNull(outputHelper);
             _outputHelper = outputHelper;
+            _diagnosticInfo = LoggerDiagnostics.CreateInitialDiagnosticInfo();
+        }
+
+        /// <summary>
+        /// Creates a <see cref="XUnitLoggerFactory" /> instance.
+        /// </summary>
+        /// <param name="outputHelper">The test logger output to wrap.</param>
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
+        public XUnitLoggerFactory(ITestOutputHelper outputHelper, XUnitLoggerDiagnosticInfo diagnosticInfo)
+        {
+            ArgumentNullException.ThrowIfNull(outputHelper);
+            ArgumentNullException.ThrowIfNull(diagnosticInfo);
+
+            _outputHelper = outputHelper;
+            _diagnosticInfo = diagnosticInfo;
         }
 
         /// <inheritdoc />
@@ -38,7 +54,7 @@ namespace Yextly.Xunit.Testing
         /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
-            return XUnitLoggingFactories.CreateLogger(_outputHelper, categoryName);
+            return XUnitLoggingFactories.CreateLogger(_outputHelper, categoryName, _diagnosticInfo);
         }
 
         /// <inheritdoc />

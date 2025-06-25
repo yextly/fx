@@ -18,21 +18,23 @@ namespace Yextly.Xunit.Testing
         /// Creates a logger without category.
         /// </summary>
         /// <param name="testOutputHelper">The XUnit test output helper.</param>
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
         /// <returns></returns>
-        public static ILogger CreateLogger(ITestOutputHelper testOutputHelper)
+        public static ILogger CreateLogger(ITestOutputHelper testOutputHelper, XUnitLoggerDiagnosticInfo? diagnosticInfo = null)
         {
-            return new XUnitLogger(testOutputHelper, new LoggerExternalScopeProvider(), string.Empty);
+            return new XUnitLogger(testOutputHelper, new LoggerExternalScopeProvider(), string.Empty, diagnosticInfo ?? LoggerDiagnostics.CreateInitialDiagnosticInfo());
         }
 
         /// <summary>
         /// Creates a logger with category.
         /// </summary>
         /// <param name="testOutputHelper">The XUnit test output helper.</param>
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
         /// <typeparam name="T">The category name.</typeparam>
         /// <returns></returns>
-        public static ILogger<T> CreateLogger<T>(ITestOutputHelper testOutputHelper)
+        public static ILogger<T> CreateLogger<T>(ITestOutputHelper testOutputHelper, XUnitLoggerDiagnosticInfo? diagnosticInfo = null)
         {
-            return new XUnitLogger<T>(testOutputHelper, new LoggerExternalScopeProvider());
+            return new XUnitLogger<T>(testOutputHelper, new LoggerExternalScopeProvider(), diagnosticInfo ?? LoggerDiagnostics.CreateInitialDiagnosticInfo());
         }
 
         /// <summary>
@@ -40,10 +42,11 @@ namespace Yextly.Xunit.Testing
         /// </summary>
         /// <param name="testOutputHelper">The XUnit test output helper.</param>
         /// <param name="categoryName">The name of the category.</param>
+        /// <param name="diagnosticInfo">Specifies diagnostic information that must flow through the logger.</param>
         /// <returns></returns>
-        public static ILogger CreateLogger(ITestOutputHelper testOutputHelper, string categoryName)
+        public static ILogger CreateLogger(ITestOutputHelper testOutputHelper, string categoryName, XUnitLoggerDiagnosticInfo? diagnosticInfo = null)
         {
-            return new XUnitLogger(testOutputHelper, new LoggerExternalScopeProvider(), categoryName);
+            return new XUnitLogger(testOutputHelper, new LoggerExternalScopeProvider(), categoryName, diagnosticInfo ?? LoggerDiagnostics.CreateInitialDiagnosticInfo());
         }
 
         /// <summary>

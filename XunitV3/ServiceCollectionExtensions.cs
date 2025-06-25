@@ -25,6 +25,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <exception cref="ArgumentNullException">Arguments are null or empty.</exception>
         public static IServiceCollection AddXUnitLogging(this IServiceCollection services, ITestOutputHelper testOutputHelper)
         {
+            ArgumentNullException.ThrowIfNull(services);
+            ArgumentNullException.ThrowIfNull(testOutputHelper);
+
             return AddXUnitLogging(services, testOutputHelper, true);
         }
 
@@ -48,6 +51,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.TryAddSingleton<ITestOutputHelper>(testOutputHelper);
+            services.TryAddSingleton<XUnitLoggerDiagnosticInfo>(LoggerDiagnostics.CreateInitialDiagnosticInfo());
 
             services.TryAddEnumerable(new ServiceDescriptor(typeof(ILogger<>), typeof(XUnitLogger<>), ServiceLifetime.Singleton));
             services.TryAddSingleton<ILoggerFactory, XUnitLoggerFactory>();
