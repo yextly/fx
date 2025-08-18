@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     # apparently .net 9 is not yet in this runner and must be manually added
     - name: Setup dotnet
