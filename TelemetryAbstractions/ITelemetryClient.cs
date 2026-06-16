@@ -34,9 +34,9 @@ namespace Yextly.Telemetry.Abstractions
         /// <param name="operationName">The name of the operation.</param>
         /// <param name="type">The type of the operation to track.</param>
         /// <param name="operationId">The unique identifier of the operation.</param>
-        /// <param name="parentOperationid">The parent operation identifier.</param>
+        /// <param name="parentOperationId">The parent operation identifier.</param>
         /// <remarks>The meaning of <paramref name="type"/> depends on the precise implementation used.</remarks>
         /// <returns></returns>
-        ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationid = null);
+        ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationId = null);
     }
 }

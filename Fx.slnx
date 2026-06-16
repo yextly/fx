@@ -22,6 +22,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/Telemetry/">
+    <Project Path="OpenTelemetry/OpenTelemetry.csproj" />
     <Project Path="TelemetryAbstractions/TelemetryAbstractions.csproj" />
     <Project Path="TelemetryAzure/TelemetryAzure.csproj" />
   </Folder>
