@@ -4,8 +4,6 @@
 //
 // ==--==
 
-using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Immutable;
 using System.Diagnostics;
 using Yextly.Telemetry.Abstractions;
 
@@ -18,23 +16,19 @@ public sealed class OtTelemetryClient : ITelemetryClient
 {
     private const ActivityKind DefaultKind = ActivityKind.Internal;
 
-    private readonly ImmutableArray<Type> _enrichers;
     private readonly IServiceProvider _serviceProvider;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OtTelemetryClient" /> class.
     /// </summary>
     /// <param name="activitySource">The source used to create telemetry operations.</param>
-    /// <param name="enrichers">Registered enrichers.</param>
     /// <param name="serviceProvider">Service provider used to resolve enrichers.</param>
-    public OtTelemetryClient(ActivitySource activitySource, IEnumerable<IOtActivityEnricher> enrichers, IServiceProvider serviceProvider)
+    public OtTelemetryClient(ActivitySource activitySource, IServiceProvider serviceProvider)
     {
         ArgumentNullException.ThrowIfNull(activitySource);
-        ArgumentNullException.ThrowIfNull(enrichers);
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
         ActivitySource = activitySource;
-        _enrichers = [.. enrichers.Select(x => x.GetType())];
         _serviceProvider = serviceProvider;
     }
 
@@ -196,22 +190,6 @@ public sealed class OtTelemetryClient : ITelemetryClient
             }
 
             activity.Start();
-        }
-
-        foreach (var enricherType in _enrichers)
-        {
-            if (_serviceProvider.GetService(enricherType) is IOtActivityEnricher enricher)
-            {
-                enricher.Enrich(activity);
-            }
-            else
-            {
-                object instance = ActivatorUtilities.CreateInstance(_serviceProvider, enricherType);
-                if (instance is IOtActivityEnricher fallback)
-                {
-                    fallback.Enrich(activity);
-                }
-            }
         }
 
         return activity;

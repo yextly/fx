@@ -4,6 +4,7 @@
 //
 // ==--==
 
+using OpenTelemetry;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -12,10 +13,10 @@ namespace Yextly.OpenTelemetry;
 /// <summary>
 /// Adds current operating system information to newly created activities.
 /// </summary>
-public sealed class OperatingSystemActivityEnricher : IOtActivityEnricher
+public sealed class OperatingSystemActivityEnricher : BaseProcessor<Activity>
 {
     /// <inheritdoc />
-    public void Enrich(Activity activity)
+    public override void OnStart(Activity activity)
     {
         ArgumentNullException.ThrowIfNull(activity);
 
