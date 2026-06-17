@@ -18,19 +18,21 @@ public static class ServiceCollectionExtensions
     /// <param name="configure">Optional configuration callback.</param>
     /// <returns>The updated service collection.</returns>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Technically this is correct since we are in the root.")]
-    public static IServiceCollection AddOpenTelemetryAzureTelemetry(this IServiceCollection services, Action<OtInitializationOptions>? configure = null)
+    public static IServiceCollection AddOpenTelemetryHelpers(this IServiceCollection services, Action<OtInitializationOptions>? configure = null)
     {
         var options = new OtInitializationOptions();
         configure?.Invoke(options);
+        var sourceName = options.ActivitySourceName ?? "Yextly.OpenTelemetry";
+        var source = new ActivitySource(sourceName);
+
         var snapshot = new OtImmutableInitializationOptions
         {
-            ActivitySourceName = options.ActivitySourceName ?? "Yextly.OpenTelemetry",
-            Enabled = options.Enabled
+            ActivitySourceName = sourceName,
+            Enabled = options.Enabled,
+            ActivitySource = source,
         };
-        options.Clone();
 
         services.TryAddSingleton(snapshot);
-        services.AddSingleton(new ActivitySource(snapshot.ActivitySourceName));
 
         services.AddOpenTelemetry()
             .WithTracing(builder => builder.AddSource(snapshot.ActivitySourceName));

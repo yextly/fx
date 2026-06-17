@@ -4,6 +4,9 @@
 //
 // ==--==
 
+using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using System.Diagnostics;
 using Yextly.Telemetry.Abstractions;
 
@@ -14,28 +17,27 @@ namespace Yextly.OpenTelemetry;
 /// </summary>
 public sealed class OtTelemetryClient : ITelemetryClient
 {
-    private const ActivityKind DefaultKind = ActivityKind.Internal;
-
-    private readonly IServiceProvider _serviceProvider;
+    private readonly OtImmutableInitializationOptions _options;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OtTelemetryClient" /> class.
     /// </summary>
-    /// <param name="activitySource">The source used to create telemetry operations.</param>
-    /// <param name="serviceProvider">Service provider used to resolve enrichers.</param>
-    public OtTelemetryClient(ActivitySource activitySource, IServiceProvider serviceProvider)
+    public OtTelemetryClient(OtImmutableInitializationOptions options, IServiceProvider serviceProvider)
     {
-        ArgumentNullException.ThrowIfNull(activitySource);
+        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
-        ActivitySource = activitySource;
-        _serviceProvider = serviceProvider;
+        // Forces the creation of the Otel pipeline
+        _ = serviceProvider.GetService<TracerProvider>();
+        _ = serviceProvider.GetService<MeterProvider>();
+
+        _options = options;
     }
 
     /// <summary>
     /// Gets the activity source used by this telemetry client.
     /// </summary>
-    public ActivitySource ActivitySource { get; }
+    public ActivitySource ActivitySource => _options.ActivitySource;
 
     /// <inheritdoc />
     public ITelemetryPropertyBag CreatePropertyBag()
@@ -53,9 +55,10 @@ public sealed class OtTelemetryClient : ITelemetryClient
     public void TrackEvent(string eventName, ITelemetryPropertyBag? properties = default)
     {
         Activity? activity = Activity.Current;
+
         if (activity is null)
         {
-            using OtOperation operation = (OtOperation)TrackOperation(eventName, "event");
+            using var operation = (OtOperation)TrackOperation(eventName, "event");
             activity = Activity.Current;
         }
 
@@ -71,9 +74,10 @@ public sealed class OtTelemetryClient : ITelemetryClient
         ArgumentNullException.ThrowIfNull(exception);
 
         Activity? activity = Activity.Current;
+
         if (activity is null)
         {
-            using OtOperation operation = (OtOperation)TrackOperation(exception.GetType().Name, "exception");
+            using var operation = (OtOperation)TrackOperation(exception.GetType().Name, "exception");
             activity = Activity.Current;
         }
 
@@ -90,47 +94,57 @@ public sealed class OtTelemetryClient : ITelemetryClient
     }
 
     /// <inheritdoc />
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Many things could go wrong, and we ignore which exception types could be thrown.")]
     public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationId = default)
     {
-        string? parentId;
+        ActivityContext? parentContext = null;
 
-        if (!string.IsNullOrWhiteSpace(parentOperationId))
+        // Convert legacy Application Insights identifiers -> OpenTelemetry context
+        if (!string.IsNullOrWhiteSpace(operationId))
         {
-            parentId = parentOperationId;
+            try
+            {
+                var traceId = ActivityTraceId.CreateFromString(operationId.AsSpan());
+
+                var spanId = !string.IsNullOrWhiteSpace(parentOperationId)
+                    ? ActivitySpanId.CreateFromString(parentOperationId.AsSpan())
+                    : ActivitySpanId.CreateRandom();
+
+                parentContext = new ActivityContext(traceId, spanId, ActivityTraceFlags.Recorded);
+            }
+            catch
+            {
+                // Ignore invalid IDs (avoid crashing telemetry)
+                parentContext = null;
+            }
         }
-        else
-        {
-            parentId = (!string.IsNullOrWhiteSpace(operationId) ? operationId : null);
-        }
+
+        var kind = MapActivityKind(type);
 
         var tags = new List<KeyValuePair<string, object?>>
         {
-            new("yextly.telemetry.dependency_type", type),
+            new("dependency.type", type),
         };
 
-        if (!string.IsNullOrWhiteSpace(operationId))
-        {
-            tags.Add(new("yextly.telemetry.operation_id", operationId));
-        }
+        Activity? activity = StartActivity(operationName, kind, parentContext, tags);
 
-        if (!string.IsNullOrWhiteSpace(parentOperationId))
-        {
-            tags.Add(new("yextly.telemetry.parent_operation_id", parentOperationId));
-        }
-
-        Activity? activity = StartActivity(operationName, parentId, tags);
         return new OtOperation(this, activity);
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Required internally non static by design.")]
     internal void TrackEventCore(Activity activity, string eventName, ITelemetryPropertyBag? properties)
     {
+        ArgumentNullException.ThrowIfNull(activity);
+
         activity.AddEvent(new ActivityEvent(eventName, tags: CreateTags(properties)));
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "Required internally non static by design.")]
     internal void TrackExceptionCore(Activity activity, Exception exception, ITelemetryPropertyBag? properties)
     {
+        ArgumentNullException.ThrowIfNull(activity);
+        ArgumentNullException.ThrowIfNull(exception);
+
         activity.SetStatus(ActivityStatusCode.Error, exception.Message);
 
         var tags = new ActivityTagsCollection
@@ -159,6 +173,7 @@ public sealed class OtTelemetryClient : ITelemetryClient
         }
 
         var tags = new ActivityTagsCollection();
+
         foreach ((string key, string value) in propertyBag.Data)
         {
             tags[key] = value;
@@ -167,27 +182,40 @@ public sealed class OtTelemetryClient : ITelemetryClient
         return tags;
     }
 
-    private Activity? StartActivity(string operationName, string? parentId, IEnumerable<KeyValuePair<string, object?>>? tags)
+    private static ActivityKind MapActivityKind(string type)
     {
-        Activity? activity = string.IsNullOrWhiteSpace(parentId)
-            ? ActivitySource.StartActivity(DefaultKind, tags: tags, name: operationName)
-            : ActivitySource.StartActivity(operationName, DefaultKind, parentId: parentId, tags: tags);
+        return type switch
+        {
+            "http" => ActivityKind.Client,
+            "db" => ActivityKind.Client,
+            "messaging" => ActivityKind.Producer,
+            "server" => ActivityKind.Server,
+            _ => ActivityKind.Internal
+        };
+    }
+
+    private Activity? StartActivity(string operationName, ActivityKind kind, ActivityContext? parentContext, IEnumerable<KeyValuePair<string, object?>>? tags)
+    {
+        var activity = parentContext is null
+            ? ActivitySource.StartActivity(operationName, kind, parentId: null, tags: tags)
+            : ActivitySource.StartActivity(operationName, kind, parentContext.Value, tags);
 
         if (activity is null)
         {
             activity = new Activity(operationName);
-            if (!string.IsNullOrWhiteSpace(parentId))
+
+            if (parentContext is not null)
             {
-                activity.SetParentId(parentId);
+                activity.SetParentId(parentContext.Value.TraceId, parentContext.Value.SpanId, parentContext.Value.TraceFlags);
             }
 
-            if (tags is not null)
-            {
-                foreach ((string key, object? value) in tags)
-                {
-                    activity.SetTag(key, value);
-                }
-            }
+            //if (tags is not null)
+            //{
+            //    foreach ((string key, object? value) in tags)
+            //    {
+            //        activity.SetTag(key, value);
+            //    }
+            //}
 
             activity.Start();
         }
