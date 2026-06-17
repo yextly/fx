@@ -22,7 +22,8 @@ public static class ServiceCollectionExtensions
     {
         var options = new OtInitializationOptions();
         configure?.Invoke(options);
-        var sourceName = options.ActivitySourceName ?? "Yextly.OpenTelemetry";
+
+        var sourceName = options.DefaultActivitySourceName ?? "Yextly.OpenTelemetry";
         var source = new ActivitySource(sourceName);
 
         var snapshot = new OtImmutableInitializationOptions
@@ -30,6 +31,7 @@ public static class ServiceCollectionExtensions
             ActivitySourceName = sourceName,
             Enabled = options.Enabled,
             ActivitySource = source,
+            ActivitySourcePattern = options.ActivitySourcePattern,
         };
 
         services.TryAddSingleton(snapshot);
@@ -37,14 +39,24 @@ public static class ServiceCollectionExtensions
         services.AddOpenTelemetry()
             .WithTracing(builder => builder.AddSource(snapshot.ActivitySourceName));
 
+        if (!string.IsNullOrWhiteSpace(snapshot.ActivitySourcePattern))
+        {
+            services.AddOpenTelemetry()
+                .WithTracing(builder => builder.AddSource(snapshot.ActivitySourcePattern));
+        }
+
         if (snapshot.Enabled)
         {
             services.TryAddSingleton<ITelemetryClient, OtTelemetryClient>();
+            services.TryAddSingleton(typeof(ITelemetryClient<>), typeof(OtTelemetryClient<>));
         }
         else
         {
             services.TryAddSingleton<ITelemetryClient, NoOtTelemetryClient>();
+            services.TryAddSingleton(typeof(ITelemetryClient<>), typeof(NoOtTelemetryClient<>));
         }
+
+        services.TryAddSingleton<ITelemetryClientAccessor, OtTelemetryClientAccessor>();
 
         return services;
     }

@@ -24,6 +24,11 @@ namespace Yextly.OpenTelemetry
         public required string ActivitySourceName { get; init; }
 
         /// <summary>
+        /// Gets or sets the pattern to used to register future activity sources.
+        /// </summary>
+        public string? ActivitySourcePattern { get; init; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether telemetry is enabled.
         /// </summary>
         public bool Enabled { get; init; }

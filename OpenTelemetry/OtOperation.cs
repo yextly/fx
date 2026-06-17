@@ -15,14 +15,14 @@ namespace Yextly.OpenTelemetry;
 public sealed class OtOperation : ITelemetryOperation
 {
     private readonly Activity? _activity;
-    private readonly OtTelemetryClient _client;
+    private readonly OtTelemetryClientCore _client;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OtOperation" /> class.
     /// </summary>
     /// <param name="client">Owning telemetry client.</param>
     /// <param name="activity">Activity that represents the operation.</param>
-    public OtOperation(OtTelemetryClient client, Activity? activity)
+    public OtOperation(OtTelemetryClientCore client, Activity? activity)
     {
         ArgumentNullException.ThrowIfNull(client);
 
