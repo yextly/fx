@@ -101,20 +101,28 @@ public class OtTelemetryClientCore : ITelemetryClient
     /// <inheritdoc />
     public ITelemetryOperation TrackOperation(string operationName, string type)
     {
-        return TrackOperation(operationName, type, string.Empty, null);
+        return TrackOperation(operationName, type, null, null);
     }
 
     /// <inheritdoc />
-    public ITelemetryOperation TrackOperation(string operationName, string type, string operationId, string? parentOperationId = default)
+    public ITelemetryOperation TrackOperation(string operationName, string type, string? operationId, string? parentOperationId = default)
     {
         var kind = MapActivityKind(type);
 
         return TrackOperation(operationName, type, kind, operationId, parentOperationId);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Tracks an operation and returns an instance implementing <see cref="ITelemetryOperation" /> which must be kept alive for the whole duration of the operation that is being tracked.
+    /// </summary>
+    /// <param name="operationName">The name of the operation.</param>
+    /// <param name="type">The type of the operation to track.</param>
+    /// <remarks>The meaning of <paramref name="type" /> depends on the precise implementation used.</remarks>
+    /// <param name="kind">The kind of the operation to track. This is used to determine the appropriate ActivityKind for the underlying Activity.</param>
+    /// <param name="operationId">The already computed operation id (usually used for integrations).</param>
+    /// <param name="parentOperationId">The known parent id of the activity (usually used for integrations).</param>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1031:Do not catch general exception types", Justification = "Many things could go wrong, and we ignore which exception types could be thrown.")]
-    public ITelemetryOperation TrackOperation(string operationName, string type, ActivityKind kind, string operationId, string? parentOperationId = default)
+    public ITelemetryOperation TrackOperation(string operationName, string type, ActivityKind kind, string? operationId, string? parentOperationId = default)
     {
         ActivityContext? parentContext = null;
 
