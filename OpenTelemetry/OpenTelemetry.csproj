@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <RootNamespace>Yextly.OpenTelemetry</RootNamespace>
-    <AssemblyName>Yextly.OpenTelemetry</AssemblyName>
+    <RootNamespace>Yextly.Telemetry.OpenTelemetry</RootNamespace>
+    <AssemblyName>Yextly.Telemetry.OpenTelemetry</AssemblyName>
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>Telemetry support built on top of OpenTelemetry and ActivitySource</Description>

@@ -6,7 +6,7 @@
 
 using Yextly.Telemetry.Abstractions;
 
-namespace Yextly.OpenTelemetry;
+namespace Yextly.Telemetry.OpenTelemetry;
 
 /// <summary>
 /// Mutable property bag used to enrich events and exceptions.

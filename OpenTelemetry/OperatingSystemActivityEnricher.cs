@@ -8,7 +8,7 @@ using OpenTelemetry;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Yextly.OpenTelemetry;
+namespace Yextly.Telemetry.OpenTelemetry;
 
 /// <summary>
 /// Adds current operating system information to newly created activities.

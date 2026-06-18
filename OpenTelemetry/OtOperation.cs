@@ -7,7 +7,7 @@
 using System.Diagnostics;
 using Yextly.Telemetry.Abstractions;
 
-namespace Yextly.OpenTelemetry;
+namespace Yextly.Telemetry.OpenTelemetry;
 
 /// <summary>
 /// <see cref="ITelemetryOperation" /> implementation backed by <see cref="Activity" />.

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
-using Yextly.OpenTelemetry;
+using Yextly.Telemetry.OpenTelemetry;
 
 namespace Yextly.Telemetry.Abstractions
 {

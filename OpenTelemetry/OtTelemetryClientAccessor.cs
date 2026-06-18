@@ -7,7 +7,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Yextly.Telemetry.Abstractions;
 
-namespace Yextly.OpenTelemetry
+namespace Yextly.Telemetry.OpenTelemetry
 {
     internal sealed class OtTelemetryClientAccessor : ITelemetryClientAccessor
     {

@@ -6,7 +6,7 @@
 
 using System.Diagnostics;
 
-namespace Yextly.OpenTelemetry
+namespace Yextly.Telemetry.OpenTelemetry
 {
     /// <summary>
     /// Initialization options for OpenTelemetry-based telemetry support.

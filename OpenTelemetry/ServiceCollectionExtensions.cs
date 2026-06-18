@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics;
-using Yextly.OpenTelemetry;
-
 using Yextly.Telemetry.Abstractions;
+
+using Yextly.Telemetry.OpenTelemetry;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
         var options = new OtInitializationOptions();
         configure?.Invoke(options);
 
-        var sourceName = options.DefaultActivitySourceName ?? "Yextly.OpenTelemetry";
+        var sourceName = options.DefaultActivitySourceName ?? "Yextly.Telemetry.OpenTelemetry";
         var source = new ActivitySource(sourceName);
 
         var snapshot = new OtImmutableInitializationOptions

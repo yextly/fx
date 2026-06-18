@@ -6,7 +6,7 @@
 
 using Yextly.Telemetry.Abstractions;
 
-namespace Yextly.OpenTelemetry;
+namespace Yextly.Telemetry.OpenTelemetry;
 
 /// <summary>
 /// No-op telemetry client.
