@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTarget="SetVersion">
+<Project DefaultTargets="ConditionalSetVersion" InitialTargets="YextlyDiagnostics">
+
+	<Target Name="YextlyDiagnostics">
+		<Message Text="EnableGitInfo is active" Importance="High" />
+
+	</Target>
+
+	<Target Name="ConditionalSetVersion" DependsOnTargets="SetVersion" Condition="  ('$(EnableGitInfo)' != 'false') " />
 </Project>

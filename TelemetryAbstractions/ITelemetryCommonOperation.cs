@@ -21,16 +21,16 @@ namespace Yextly.Telemetry.Abstractions
         /// <summary>
         /// Tracks an application-based events.
         /// </summary>
-        /// <param name="name">The name of the event to record.</param>
-        /// <param name="tags">The additional tags (metadata) to relate to the event.</param>
-        void TrackEvent(string name, ITelemetryPropertyBag? tags = null);
+        /// <param name="eventName">The name of the event to record.</param>
+        /// <param name="properties">The additional tags (metadata) to relate to the event.</param>
+        void TrackEvent(string eventName, ITelemetryPropertyBag? properties = null);
 
         /// <summary>
         /// Tracks an exception.
         /// </summary>
         /// <remarks>Exception data is automatically converted to telemetry data on a best-effort basis.</remarks>
         /// <param name="exception">The exception to record.</param>
-        /// <param name="tags">The additional tags (metadata) to relate to the exception.</param>
-        void TrackException(Exception exception, ITelemetryPropertyBag? tags = null);
+        /// <param name="properties">The additional properties (metadata) to relate to the exception.</param>
+        void TrackException(Exception exception, ITelemetryPropertyBag? properties = null);
     }
 }

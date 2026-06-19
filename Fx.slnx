@@ -1,0 +1,43 @@
+<Solution>
+  <Folder Name="/Mocks/">
+    <Project Path="Mocks/Mocks.csproj" />
+    <Project Path="MocksUnitTests/MocksUnitTests.csproj" />
+  </Folder>
+  <Folder Name="/Scripting/">
+    <Project Path="ScriptingAbstractions/ScriptingAbstractions.csproj" />
+    <Project Path="ScriptingServices/ScriptingServices.csproj" />
+    <Project Path="ScriptingServicesSFA/ScriptingServicesSFA.csproj" />
+    <Project Path="ScriptingServicesUnitTests/ScriptingServicesUnitTests.csproj" />
+    <Project Path="ScriptingTestingAssembly1/ScriptingTestingAssembly1.csproj" />
+  </Folder>
+  <Folder Name="/ServiceFabric/">
+    <Project Path="Crud/Crud.csproj" />
+    <Project Path="CrudUnitTests/CrudUnitTests.csproj" />
+    <Project Path="Mvc/Mvc.csproj" />
+    <Project Path="WellKnownIdentifiers/WellKnownIdentifiers.csproj" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/Telemetry/">
+    <Project Path="OpenTelemetry/OpenTelemetry.csproj" />
+    <Project Path="TelemetryAbstractions/TelemetryAbstractions.csproj" />
+    <Project Path="TelemetryAzure/TelemetryAzure.csproj" />
+  </Folder>
+  <Folder Name="/Xunit/">
+    <Project Path="Xunit/Xunit.csproj" />
+    <Project Path="XUnitUnitTests/XUnitUnitTests.csproj" />
+    <Project Path="XunitV3/XunitV3.csproj" />
+    <Project Path="XUnitV3UnitTests/XUnitV3UnitTests.csproj" />
+  </Folder>
+  <Project Path="Common/Common.csproj" />
+  <Project Path="CommonUnitTests/CommonUnitTests.csproj" />
+  <Project Path="Globalization/Globalization.csproj" />
+  <Project Path="GlobalizationUnitTests/GlobalizationUnitTests.csproj" />
+  <Project Path="Reflection/Reflection.csproj" />
+  <Project Path="ReflectionUnitTests/ReflectionUnitTests.csproj" />
+  <Project Path="Tasks/Tasks.csproj" />
+  <Project Path="TasksUnitTests/TasksUnitTests.csproj" />
+</Solution>

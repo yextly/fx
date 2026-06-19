@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net10.0</TargetFrameworks>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Yextly.Telemetry.OpenTelemetry</RootNamespace>
+    <AssemblyName>Yextly.Telemetry.OpenTelemetry</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Telemetry support built on top of OpenTelemetry and ActivitySource</Description>
+    <Authors>$(Company)</Authors>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <IsPackable>true</IsPackable>
+    <OpenTelemetry>3</OpenTelemetry>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Compat\**" />
+    <EmbeddedResource Remove="Compat\**" />
+    <None Remove="Compat\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="OpenTelemetry" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TelemetryAbstractions\TelemetryAbstractions.csproj" />
+  </ItemGroup>
+
+</Project>

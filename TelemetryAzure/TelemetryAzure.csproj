@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net8.0;net9.0;net10.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<Nullable>enable</Nullable>
 		<RootNamespace>Yextly.Telemetry.Azure</RootNamespace>
 		<AssemblyName>Yextly.Telemetry.Azure</AssemblyName>
@@ -14,14 +14,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="GitInfo">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.ApplicationInsights.WorkerService" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
 	</ItemGroup>

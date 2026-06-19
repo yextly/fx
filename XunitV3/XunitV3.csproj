@@ -14,10 +14,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="GitInfo">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.ObjectPool" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
@@ -25,7 +21,4 @@
 		<PackageReference Include="xunit.v3" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-	</ItemGroup>
 </Project>

@@ -20,14 +20,6 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="GitInfo">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -35,4 +27,5 @@
 		<ProjectReference Include="..\ScriptingServices\ScriptingServices.csproj" />
 		<ProjectReference Include="..\ScriptingTestingAssembly1\ScriptingTestingAssembly1.csproj" />
 	</ItemGroup>
+
 </Project>

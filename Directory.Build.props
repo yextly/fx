@@ -19,15 +19,6 @@
 
         <WarnOnPackingNonPackableProject>True</WarnOnPackingNonPackableProject>
 
-        <GitDefaultBranch>main</GitDefaultBranch>
-        <GitTagRegex>v?*</GitTagRegex>
-        <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
-        <GitIgnoreTagVersion>false</GitIgnoreTagVersion>
-
-        <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-        <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-        <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
-
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Authors>Yextly Group; Contributors</Authors>
         <PackageProjectUrl>https://github.com/yextly/fx</PackageProjectUrl>
@@ -40,6 +31,63 @@
         <PackageIcon>Package.png</PackageIcon>
     </PropertyGroup>
 
+    <Choose>
+        <When Condition=" ('$(EnableGitInfo)' != 'false') ">
+            <PropertyGroup>
+
+                <!-- GitInfo configuration -->
+                <GitTagRegex>v?*</GitTagRegex>
+                <GitDefaultBranch>main</GitDefaultBranch>
+                <GitIgnoreBranchVersion>true</GitIgnoreBranchVersion>
+                <GitIgnoreTagVersion>false</GitIgnoreTagVersion>
+
+                <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+                <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+                <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+                
+                <!-- Allow code detection -->
+                <DefineConstants>$(DefineConstants);ENABLE_GITINFO</DefineConstants>
+            </PropertyGroup>
+
+            <!-- Use DoNotWantGitInfoHere in case we are overincluding -->            
+            <ItemGroup Condition=" ('DoNotWantGitInfoHere') != 'true' ">
+                <PackageReference Include="GitInfo">
+                    <PrivateAssets>all</PrivateAssets>
+                    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+                </PackageReference>
+            </ItemGroup>
+
+            <ItemGroup Condition=" ('DoNotWantGitInfoHere') != 'true' ">
+                <Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
+            </ItemGroup>
+            
+        </When>
+
+        <Otherwise>
+            <PropertyGroup>
+
+                <!-- Detect forced version -->
+                <_EffectiveVersion Condition=" '$(Version)' != '' ">$(Version)</_EffectiveVersion>
+                <_EffectiveVersion Condition=" '$(Version)' == '' ">3.14.15.92</_EffectiveVersion>
+
+                <!-- Strip prerelease suffix (everything after '-') -->
+                <_CleanVersion>$([System.String]::Copy('$(_EffectiveVersion)').Split('-')[0])</_CleanVersion>
+
+                <GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
+                <GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
+                <!--<GenerateAssemblyInformationalVersionAttribute>true</GenerateAssemblyInformationalVersionAttribute>
+
+                --><!-- Informational keeps full version (including preview) --><!--
+                <AssemblyInformationalVersion>$(_EffectiveVersion)</AssemblyInformationalVersion>-->
+
+                <!-- Strict numeric versions -->
+                <AssemblyVersion>$(_CleanVersion)</AssemblyVersion>
+                <FileVersion>$(_CleanVersion)</FileVersion>
+
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+    
     <ItemGroup>
         <None Include="$([System.IO.Path]::Combine($(MSBuildThisFileDirectory),&quot;Images&quot;,&quot;Package.png&quot;))">
             <Pack>True</Pack>
