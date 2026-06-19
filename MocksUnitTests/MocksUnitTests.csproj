@@ -26,20 +26,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\Mocks\Mocks.csproj" />
 		<ProjectReference Include="..\Tasks\Tasks.csproj" />
 		<ProjectReference Include="..\XunitV3\XunitV3.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="GitInfo">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
 	</ItemGroup>
 
 </Project>

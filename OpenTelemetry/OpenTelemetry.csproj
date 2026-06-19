@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitInfo" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="OpenTelemetry" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
@@ -29,7 +28,4 @@
     <ProjectReference Include="..\TelemetryAbstractions\TelemetryAbstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\Shared\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-  </ItemGroup>
 </Project>

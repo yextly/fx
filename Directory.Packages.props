@@ -4,8 +4,10 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageVersion Include="coverlet.collector" Version="6.0.4" />
-        <PackageVersion Include="GitInfo" Version="3.3.3" />
         <PackageVersion Include="Moq" Version="4.20.72" />
+    </ItemGroup>
+    <ItemGroup Condition=" ('$(EnableGitInfo)' != 'false') ">
+        <PackageVersion Include="GitInfo" Version="3.3.3" />
     </ItemGroup>
     <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'" Label="8.0">
         <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.22.0" />
