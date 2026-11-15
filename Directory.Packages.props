@@ -66,4 +66,25 @@
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
         <PackageVersion Include="xunit.v3" Version="3.2.0" />
     </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net11.0'" Label="11.0">
+        <PackageVersion Include="Microsoft.ApplicationInsights.WorkerService" Version="2.23.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.Common" Version="5.12.0" />
+        <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="5.12.0" />
+        <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.ObjectPool" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Http.Polly" Version="11.0.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.12.0" />
+        <PackageVersion Include="OpenTelemetry" Version="1.21.0" />
+        <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.21.0" />
+        <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.21.0" />
+        <PackageVersion Include="Polly" Version="8.9.1" />
+        <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
+        <PackageVersion Include="xunit" Version="2.9.3" />
+        <PackageVersion Include="xunit.abstractions" Version="2.0.3" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
+        <PackageVersion Include="xunit.v3" Version="4.0.3" />
+    </ItemGroup>
 </Project>
