@@ -25,8 +25,6 @@
         <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.16.0" />
         <PackageVersion Include="Polly" Version="8.6.4" />
         <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
-        <PackageVersion Include="xunit" Version="2.9.3" />
-        <PackageVersion Include="xunit.abstractions" Version="2.0.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
         <PackageVersion Include="xunit.v3" Version="3.2.0" />
     </ItemGroup>
@@ -46,8 +44,6 @@
         <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.21.0" />
         <PackageVersion Include="Polly" Version="8.9.1" />
         <PackageVersion Include="Polly.Contrib.WaitAndRetry" Version="1.1.1" />
-        <PackageVersion Include="xunit" Version="2.9.3" />
-        <PackageVersion Include="xunit.abstractions" Version="2.0.3" />
         <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.1" />
         <PackageVersion Include="xunit.v3" Version="4.0.3" />
     </ItemGroup>

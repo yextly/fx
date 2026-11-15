@@ -27,8 +27,6 @@
     <Project Path="TelemetryAzure/TelemetryAzure.csproj" />
   </Folder>
   <Folder Name="/Xunit/">
-    <Project Path="Xunit/Xunit.csproj" />
-    <Project Path="XUnitUnitTests/XUnitUnitTests.csproj" />
     <Project Path="XunitV3/XunitV3.csproj" />
     <Project Path="XUnitV3UnitTests/XUnitV3UnitTests.csproj" />
   </Folder>
