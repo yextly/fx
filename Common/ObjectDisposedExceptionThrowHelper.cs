@@ -23,14 +23,7 @@ namespace Yextly.Common
         [StackTraceHidden]
         public static void ThrowIf([DoesNotReturnIf(true)] bool condition, object instance)
         {
-#if !NET7_0_OR_GREATER
-            if (condition)
-            {
-                throw new ObjectDisposedException(instance?.GetType().FullName);
-            }
-#else
             ObjectDisposedException.ThrowIf(condition, instance);
-#endif
         }
 
         /// <summary>
@@ -42,14 +35,7 @@ namespace Yextly.Common
         [StackTraceHidden]
         public static void ThrowIf([DoesNotReturnIf(true)] bool condition, Type type)
         {
-#if !NET7_0_OR_GREATER
-            if (condition)
-            {
-                throw new ObjectDisposedException(type?.FullName);
-            }
-#else
             ObjectDisposedException.ThrowIf(condition, type);
-#endif
         }
     }
 }
