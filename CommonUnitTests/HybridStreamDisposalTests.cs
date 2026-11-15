@@ -355,7 +355,6 @@ namespace CommonUnitTests
             Assert.ThrowsAny<InvalidOperationException>(() => _ = _stream.WriteTimeout);
         }
 
-#if NET8_0_OR_GREATER
         [Fact]
         public void ReadAtLeast()
         {
@@ -391,14 +390,11 @@ namespace CommonUnitTests
             Assert.NotNull(stream);
             await Assert.ThrowsAnyAsync<NotSupportedException>(async () => await _stream.ReadExactlyAsync(new byte[10], 0, 10, cancellationToken).ConfigureAwait(true)).ConfigureAwait(true);
         }
-#endif
 
-#if NET8_0_OR_GREATER
         [Fact]
         public void ReadExactly()
         {
             Assert.ThrowsAny<ObjectDisposedException>(() => _stream.ReadExactly(new byte[10].AsSpan()));
         }
-#endif
     }
 }
