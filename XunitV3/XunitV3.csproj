@@ -11,6 +11,8 @@
 		<Authors>$(Company)</Authors>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<IsPackable>true</IsPackable>
+		<IsTestProject>false</IsTestProject>
+		<IsTestingPlatformApplication>false</IsTestingPlatformApplication>
 	</PropertyGroup>
 
 	<ItemGroup>
