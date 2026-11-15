@@ -28,11 +28,6 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: '6.0.x'
-
-    - name: Setup dotnet
-      uses: actions/setup-dotnet@v6
-      with:
         dotnet-version: '8.0.x'
 
     - name: Setup dotnet
@@ -45,6 +40,10 @@ jobs:
       with:
         dotnet-version: '10.0.x'
 
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: '11.0.x'
 
     - name: Tests
       run: dotnet test --framework ${{ matrix.framework }}
